@@ -1,0 +1,12 @@
+# CMake
+cmake-build-*/
+# idea folder
+.idea/
+# logs
+logs/
+# datasets
+datasets/
+# pytorch rocm
+libtorch/
+# trained models
+*.pt
