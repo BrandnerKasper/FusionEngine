@@ -33,11 +33,11 @@ FetchContent_MakeAvailable(spdlog)
 # ------------------- Main Executable -------------------
 add_executable(FusionEngine
         src/main.cpp
-        datasets/urban100.cpp datasets/urban100.h
-        utils/utils.h
-        models/sisr.cpp models/sisr.h
-        metrics/metrics.cpp
-        metrics/metrics.h
+        src/datasets/urban100.cpp src/datasets/urban100.h
+        src/utils/utils.h
+        src/models/sisr.cpp src/models/sisr.h
+        src/metrics/metrics.cpp
+        src/metrics/metrics.h
 )
 
 target_link_libraries(FusionEngine
@@ -48,9 +48,9 @@ add_compile_definitions(FusionEngine PRIVATE PROJECT_ROOT_DIR="${PROJECT_ROOT_DI
 
 # ------------------- Test Executable -------------------
 add_executable(runTests
-        utils/utils.h
-        models/sisr.cpp models/sisr.h
-        datasets/urban100.h datasets/urban100.cpp
+        src/utils/utils.h
+        src/models/sisr.cpp src/models/sisr.h
+        src/datasets/urban100.h src/datasets/urban100.cpp
         tests/test_model.cpp
         tests/test_dataset.cpp
 )

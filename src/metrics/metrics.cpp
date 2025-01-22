@@ -1,5 +1,5 @@
-
 #include "metrics.h"
+
 
 float calculatePSNR(const torch::Tensor &prediction, const torch::Tensor &target) {
     constexpr float max_val = 1.0f; //our tensors are normalized in range [0, 1]

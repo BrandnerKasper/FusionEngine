@@ -1,9 +1,7 @@
-#include <torch/torch.h>
-
-#include "../datasets/urban100.h"
-#include "../models/sisr.h"
-#include "../utils/utils.h"
-#include "../metrics/metrics.h"
+#include "datasets/urban100.h"
+#include "models/sisr.h"
+#include "utils/utils.h"
+#include "metrics/metrics.h"
 
 
 void train() {
