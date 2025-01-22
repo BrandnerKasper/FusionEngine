@@ -7,7 +7,9 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+
 #include "../datasets/urban100.h"
+#include "../models/sisr.h"
 
 // Setup logging function
 void setupLogger() {
@@ -116,166 +118,6 @@ void readImageOpenCV() {
 }
 
 
-void showTensorAsCVImg(torch::Tensor lr_tensor, torch::Tensor hr_tensor) {
-    // Ensure tensors are contiguous
-    lr_tensor = lr_tensor.permute({1, 2, 0}).contiguous();
-    hr_tensor = hr_tensor.permute({1, 2, 0}).contiguous();
-
-    // Process LR tensor
-    lr_tensor = lr_tensor.mul(255).clamp(0, 255).to(torch::kByte);
-    int lr_channels = lr_tensor.size(2); // Number of channels
-    cv::Mat lr_img;
-    if (lr_channels == 1) {
-        lr_img = cv::Mat(lr_tensor.size(0), lr_tensor.size(1), CV_8UC1, lr_tensor.data_ptr());
-    } else if (lr_channels == 3) {
-        lr_img = cv::Mat(lr_tensor.size(0), lr_tensor.size(1), CV_8UC3, lr_tensor.data_ptr());
-    } else {
-        std::cerr << "Unsupported number of channels in LR tensor: " << lr_channels << std::endl;
-        return;
-    }
-
-    // Process HR tensor
-    hr_tensor = hr_tensor.mul(255).clamp(0, 255).to(torch::kByte);
-    int hr_channels = hr_tensor.size(2); // Number of channels
-    cv::Mat hr_img;
-    if (hr_channels == 1) {
-        hr_img = cv::Mat(hr_tensor.size(0), hr_tensor.size(1), CV_8UC1, hr_tensor.data_ptr());
-    } else if (hr_channels == 3) {
-        hr_img = cv::Mat(hr_tensor.size(0), hr_tensor.size(1), CV_8UC3, hr_tensor.data_ptr());
-    } else {
-        std::cerr << "Unsupported number of channels in HR tensor: " << hr_channels << std::endl;
-        return;
-    }
-
-    // Ensure dimensions match for concatenation
-    if (lr_img.rows != hr_img.rows || lr_img.cols != hr_img.cols) {
-        cv::resize(lr_img, lr_img, hr_img.size()); // Resize LR image to match HR image
-    }
-
-    // Ensure types match for concatenation
-    if (lr_img.type() != hr_img.type()) {
-        if (hr_img.type() == CV_8UC3 && lr_img.channels() == 1) {
-            cv::cvtColor(lr_img, lr_img, cv::COLOR_GRAY2BGR); // Convert grayscale to RGB
-        }
-    }
-
-    // Combine LR and HR images for comparison
-    cv::Mat combined;
-    cv::hconcat(lr_img, hr_img, combined); // Combine LR and HR horizontally
-
-    // Display the images
-    cv::imshow("LR and HR Images", combined);
-    cv::waitKey(0);
-    cv::destroyAllWindows();
-}
-
-
-
-void testUrban100Dataset() {
-    auto datasets = std::make_shared<datasets::Urban100>(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/val");
-    for (int i = 0; i < datasets->size(); i++) {
-        auto sample = datasets->get(i);
-        auto data = sample.data;
-        auto target = sample.target;
-
-        std::cout << "Data: " << data << std::endl;
-        std::cout << "Target: " << target << std::endl;
-        showTensorAsCVImg(data, target);
-    }
-}
-
-
-struct SimpleSISRNet : torch::nn::Module {
-    // Layers
-    torch::nn::Conv2d conv1{nullptr};
-    torch::nn::Conv2d conv2{nullptr};
-    torch::nn::Conv2d conv3{nullptr};
-
-    SimpleSISRNet() {
-        // Define the layers
-        conv1 = register_module("conv1", torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 64, 9).stride(1).padding(4)));
-        conv2 = register_module("conv2", torch::nn::Conv2d(torch::nn::Conv2dOptions(64, 32, 1).stride(1).padding(0)));
-        conv3 = register_module("conv3", torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 3, 5).stride(1).padding(2)));
-    }
-
-    torch::Tensor forward(torch::Tensor x) {
-        x = torch::nn::functional::interpolate(
-            x,
-            torch::nn::functional::InterpolateFuncOptions()
-            .scale_factor(std::vector<double>{2.0, 2.0})
-            .mode(torch::kBilinear)
-            .align_corners(false));
-        x = torch::relu(conv1->forward(x));
-        x = torch::relu(conv2->forward(x));
-        x = conv3->forward(x);
-        return x;
-    }
-};
-
-
-void testSimpleSISRNet() {
-    auto net = std::make_shared<SimpleSISRNet>();
-    net->to(torch::kCUDA);
-    auto dummy_input = torch::rand({1, 3, 512, 512});
-    dummy_input = dummy_input.to(torch::kCUDA);
-    auto test = net->forward(dummy_input);
-    std::cout << test.sizes() << std::endl;
-}
-
-
-void measureInferenceOfModel(SimpleSISRNet &model, torch::Tensor &input) {
-    std::cout << "---------------------------------\n";
-    // Check if CUDA is available
-    torch::Device device = torch::kCPU;
-    if (torch::cuda::is_available()) {
-        device = torch::kCUDA;
-        std::cout << "Using CUDA for stress test.\n";
-    } else {
-        std::cout << "Using CPU for stress test.\n";
-    }
-
-    // Move the model and input to the device
-    model.to(device);
-    model.eval(); // Set the model to evaluation mode
-    input = input.to(device);
-
-    // Perform warm-up iterations (for CUDA)
-    for (int i = 0; i < 10; i++) {
-        auto output = model.forward(input);
-    }
-
-    // Measure inference time over multiple iterations
-    constexpr int iterations{100};
-    std::chrono::duration<double> elapsed{0};
-    for (int i = 0; i < iterations; i++) {
-        if (device.is_cuda()) {
-            torch::cuda::synchronize(); // Ensure all GPU operations are done
-        }
-        auto startTime = std::chrono::high_resolution_clock::now();
-        auto output = model.forward(input);
-        if (device.is_cuda()) {
-            torch::cuda::synchronize(); // Ensure all GPU operations are done
-        }
-        auto endTime = std::chrono::high_resolution_clock::now();
-        const std::chrono::duration<double> elapsedTime = endTime - startTime;
-        elapsed += elapsedTime;
-    }
-    elapsed /= iterations;
-
-    // Log the results
-    std::cout << "Average inference time: " << elapsed.count() * 1000.0f << " milliseconds\n";
-    std::cout << "---------------------------------\n";
-}
-
-
-void testMeasure() {
-    // Initialize the model
-    SimpleSISRNet model;
-    auto dummy_input = torch::rand({1, 3, 1024, 1024});
-    // Perform the stress test
-    measureInferenceOfModel(model, dummy_input); // Set `true` to use CUDA if available
-}
-
 
 float calculatePSNR(const torch::Tensor &prediction, const torch::Tensor &target) {
     constexpr float max_val = 1.0f; //our tensors are normalized in range [0, 1]
@@ -357,7 +199,7 @@ void train() {
     // track logged info in separate file
     setupLogger();
     // Net
-    auto net = std::make_shared<SimpleSISRNet>();
+    auto net = std::make_shared<models::SISR>();
     net->to(torch::kCUDA);
 
     // Data
@@ -430,6 +272,5 @@ void train() {
 
 int main() {
     train();
-    // testUrban100Dataset();
     return 0;
 }

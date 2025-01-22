@@ -34,7 +34,9 @@ FetchContent_MakeAvailable(spdlog)
 add_executable(FusionEngine src/main.cpp
         datasets/urban100.cpp
         datasets/urban100.h
-        utils/utils.h)
+        utils/utils.h
+        models/sisr.cpp
+        models/sisr.h)
 target_link_libraries(FusionEngine PRIVATE "${TORCH_LIBRARIES}" "${OpenCV_LIBS}" spdlog::spdlog)
 # Add defines like root
 add_compile_definitions(FusionEngine PRIVATE PROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}")
