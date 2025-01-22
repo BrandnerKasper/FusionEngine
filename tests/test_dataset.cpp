@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "../datasets/urban100.h"
-#include "../utils/utils.h"
+#include "../src/datasets/urban100.h"
+#include "../src/utils/utils.h"
 
 
 TEST(DataSet, GetImages) {

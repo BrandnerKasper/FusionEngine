@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../models/sisr.h"
+#include "../src/models/sisr.h"
 
 
 TEST(SISRTest, StressTest) {

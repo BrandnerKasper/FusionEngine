@@ -14,8 +14,8 @@ For that we need to check multiple goals.
 - [x] Test network on dummy data -> to check inference speed
 - [x] Use a log in combi with the print or just the log, so I can save my training runs in a file
 - [x] (random) crop my images to a certain size (so I can stack them together and get a bigger batch size going!)
-- [ ] abstract my code into useful file structure
-- [ ] Try to get a simple Single Image super resolution network running
+- [x] abstract my code into useful file structure
+- [x] Try to get a simple Single Image super resolution network running
 - [ ] Try to get video super res running
 
 ## Game Engine
