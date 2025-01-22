@@ -36,6 +36,8 @@ add_executable(FusionEngine
         datasets/urban100.cpp datasets/urban100.h
         utils/utils.h
         models/sisr.cpp models/sisr.h
+        metrics/metrics.cpp
+        metrics/metrics.h
 )
 
 target_link_libraries(FusionEngine
