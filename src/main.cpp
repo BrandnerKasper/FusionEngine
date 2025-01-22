@@ -3,120 +3,13 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <fstream>
-#include <chrono>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "../datasets/urban100.h"
 #include "../models/sisr.h"
-
-// Setup logging function
-void setupLogger() {
-    try {
-        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-
-        // Ensure macro expansion and proper path concatenation
-        std::string log_file_path = std::string(PROJECT_ROOT_DIR) + "/logs/log.txt";
-
-        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file_path, true);
-
-        std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
-        auto logger = std::make_shared<spdlog::logger>("train_logger", sinks.begin(), sinks.end());
-
-        logger->set_level(spdlog::level::info); // Set log level
-        logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v"); // Timestamp + level + message
-
-        spdlog::register_logger(logger);
-        spdlog::set_default_logger(logger); // Set as default logger
-
-        logger->info("Logger initialized. Log file at: {}", log_file_path);
-    } catch (const spdlog::spdlog_ex &ex) {
-        std::cerr << "Log initialization failed: " << ex.what() << std::endl;
-    }
-}
-
-
-// MNIST end to end example
-struct Net : torch::nn::Module {
-    Net() {
-        fc1 = register_module("fc1", torch::nn::Linear(784, 64));
-        fc2 = register_module("fc2", torch::nn::Linear(64, 32));
-        fc3 = register_module("fc3", torch::nn::Linear(32, 10));
-    }
-
-    torch::Tensor forward(torch::Tensor x) {
-        x = torch::relu(fc1->forward(x.reshape({x.size(0), 784})));
-        x = torch::dropout(x, 0.5, is_training());
-        x = torch::relu(fc2->forward(x));
-        x = torch::log_softmax(fc3->forward(x), 1);
-        return x;
-    }
-
-    torch::nn::Linear fc1{nullptr}, fc2{nullptr}, fc3{nullptr};
-};
-
-
-void MNISTEndToEnd() {
-    // Our defined struct network
-    auto net = std::make_shared<Net>();
-    net->to(torch::kCUDA);
-
-    // multi thread dataloader (true!)io
-    const auto data_loader = torch::data::make_data_loader(
-        torch::data::datasets::MNIST(std::string(PROJECT_ROOT_DIR) + "/data/MNIST").map(
-            torch::data::transforms::Stack<>()),
-        64);
-
-    // Optimizer
-    constexpr float learning_rate = 0.01;
-    torch::optim::SGD optimizer(net->parameters(), learning_rate);
-
-    // Train Loop
-    for (size_t epoch = 0; epoch <= 1000; ++epoch) {
-        size_t batch_index = 0;
-
-        for (auto &batch: *data_loader) {
-            auto data = batch.data.to(torch::kCUDA);
-            auto target = batch.target.to(torch::kCUDA);
-            optimizer.zero_grad();
-            torch::Tensor prediction = net->forward(data);
-            torch::Tensor loss = torch::nll_loss(prediction, target);
-            loss.backward();
-            optimizer.step();
-
-            if (++batch_index % 100 == 0) {
-                std::cout << "Epoch: " << epoch << " | Batch: " << batch_index
-                        << " | Loss: " << loss.item<float>() << std::endl;
-                torch::save(net, std::string(PROJECT_ROOT_DIR) + "/net.pt");
-            }
-        }
-    }
-}
-
-
-// OpenCV read image example
-void readImageOpenCV() {
-    const std::string image_path = std::string(PROJECT_ROOT_DIR) + "/data/test.png";
-    const cv::Mat image = cv::imread(image_path, cv::IMREAD_COLOR);
-
-    if (image.empty()) {
-        std::cerr << "Could not open image: " << image_path << std::endl;
-    }
-
-    // Convert image to a tensor (H, W, C -> C, H, W)
-    auto tensor = torch::from_blob(
-        image.data, {image.rows, image.cols, 3}, torch::kUInt8).permute({2, 0, 1});
-
-    // Normalize image to [0, 1] range
-    tensor = tensor.to(torch::kFloat) / 255.0;
-
-    std::cout << tensor << std::endl;
-
-    cv::imshow("test", image);
-    cv::waitKey(0);
-}
-
+#include "../utils/utils.h"
 
 
 float calculatePSNR(const torch::Tensor &prediction, const torch::Tensor &target) {
@@ -197,7 +90,7 @@ float calculateSSIM(const torch::Tensor &img1, const torch::Tensor &img2, const 
 
 void train() {
     // track logged info in separate file
-    setupLogger();
+    utils::setupLogger();
     // Net
     auto net = std::make_shared<models::SISR>();
     net->to(torch::kCUDA);

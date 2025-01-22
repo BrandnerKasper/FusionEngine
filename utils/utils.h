@@ -4,6 +4,9 @@
 #include <random>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 
 namespace utils {
@@ -90,6 +93,29 @@ namespace utils {
         cv::destroyAllWindows();
     }
 
+    inline void setupLogger() {
+        try {
+            auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+
+            // Ensure macro expansion and proper path concatenation
+            std::string log_file_path = std::string(PROJECT_ROOT_DIR) + "/logs/log.txt";
+
+            auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file_path, true);
+
+            std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
+            auto logger = std::make_shared<spdlog::logger>("train_logger", sinks.begin(), sinks.end());
+
+            logger->set_level(spdlog::level::info); // Set log level
+            logger->set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v"); // Timestamp + level + message
+
+            spdlog::register_logger(logger);
+            spdlog::set_default_logger(logger); // Set as default logger
+
+            logger->info("Logger initialized. Log file at: {}", log_file_path);
+        } catch (const spdlog::spdlog_ex &ex) {
+            std::cerr << "Log initialization failed: " << ex.what() << std::endl;
+        }
+    }
 }
 
 #endif //UTILS_H
