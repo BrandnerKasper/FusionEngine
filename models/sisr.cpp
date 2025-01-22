@@ -66,12 +66,3 @@ void models::SISR::measureInference(torch::Tensor &input) {
     std::cout << "Average inference time: " << elapsed.count() * 1000.0f << " milliseconds\n";
     std::cout << "---------------------------------\n";
 }
-
-void models::testSISR() {
-    // Initialize the model
-    models::SISR model;
-    auto dummy_input = torch::rand({1, 3, 1024, 1024});
-    // Perform the stress test
-    std::cout << "Stress Testing SISR with " << dummy_input.sizes() << "\n";
-    model.measureInference(dummy_input);
-}
