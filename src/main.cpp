@@ -7,13 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <random>
-
-
-namespace Random {
-    static std::mt19937 mt(42);
-}
-
+#include "../datasets/urban100.h"
 
 // Setup logging function
 void setupLogger() {
@@ -176,96 +170,9 @@ void showTensorAsCVImg(torch::Tensor lr_tensor, torch::Tensor hr_tensor) {
 }
 
 
-// Urban100 example SISR dataset
-class Urban100Dataset : public torch::data::datasets::Dataset<Urban100Dataset> {
-public:
-    // Constructor
-    explicit Urban100Dataset(const std::string &dataset_dir) {
-        // Init LR paths
-        for (const auto &entry: std::filesystem::directory_iterator(dataset_dir + "/LR")) {
-            lr_image_paths.push_back(entry.path().string());
-        }
-        sort(lr_image_paths);
-
-        // Init HR paths
-        for (const auto &entry: std::filesystem::directory_iterator(dataset_dir + "/HR")) {
-            hr_image_paths.push_back(entry.path().string());
-        }
-        sort(hr_image_paths);
-    }
-
-    // Getter
-    torch::data::Example<> get(const size_t index) override {
-        // load image via OpenCV
-
-        // LR
-        cv::Mat lr_img = cv::imread(lr_image_paths[index], cv::IMREAD_COLOR);
-        if (lr_img.empty())
-            throw std::runtime_error("Could not open image: " + lr_image_paths[index]);
-
-        // HR
-        cv::Mat hr_img = cv::imread(hr_image_paths[index], cv::IMREAD_COLOR);
-        if (hr_img.empty())
-            throw std::runtime_error("Could not open image: " + hr_image_paths[index]);
-
-        // Random Crop
-        randomCrop(lr_img, hr_img, 128, 2);
-
-        // Convert to tensor
-        auto lr_tensor = torch::from_blob(
-            lr_img.data, {lr_img.rows, lr_img.cols, 3}, torch::kUInt8).permute({2, 0, 1});
-        lr_tensor = lr_tensor.to(torch::kFloat) / 255.0;
-        auto hr_tensor = torch::from_blob(
-            hr_img.data, {hr_img.rows, hr_img.cols, 3}, torch::kUInt8).permute({2, 0, 1});
-        hr_tensor = hr_tensor.to(torch::kFloat) / 255.0;
-
-        // return tuple of lr and hr (lr input, hr target)
-        return {lr_tensor, hr_tensor};
-    }
-
-
-    [[nodiscard]] torch::optional<size_t> size() const override {
-        return lr_image_paths.size();
-    }
-
-private:
-    static void sort(std::vector<std::string> &paths) {
-        // Sort the file paths based on filenames (lexicographically)
-        std::sort(paths.begin(), paths.end(),
-                  [](const std::string &a, const std::string &b) {
-                      return std::filesystem::path(a).filename() < std::filesystem::path(b).filename();
-                  });
-    }
-
-
-    // Function to perform random cropping (in-place)
-    static void randomCrop(cv::Mat &lr_img, cv::Mat &hr_img, const int crop_size, const int scale_factor) {
-        // Random top-left corner
-        const int x = static_cast<int>(Random::mt() % (lr_img.cols - crop_size + 1));
-        const int y = static_cast<int>(Random::mt() % (lr_img.rows - crop_size + 1));
-
-        // Crop LR image in-place
-        lr_img = lr_img(cv::Rect(x, y, crop_size, crop_size));
-
-        // Crop HR image in-place
-        hr_img = hr_img(
-            cv::Rect(x * scale_factor, y * scale_factor, crop_size * scale_factor, crop_size * scale_factor));
-
-        if (!lr_img.isContinuous()) {
-            lr_img = lr_img.clone();
-        }
-        if (!hr_img.isContinuous()) {
-            hr_img = hr_img.clone();
-        }
-    }
-
-    std::vector<std::string> lr_image_paths;
-    std::vector<std::string> hr_image_paths;
-};
-
 
 void testUrban100Dataset() {
-    auto datasets = std::make_shared<Urban100Dataset>(std::string(PROJECT_ROOT_DIR) + "/data/Urban100");
+    auto datasets = std::make_shared<datasets::Urban100>(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/val");
     for (int i = 0; i < datasets->size(); i++) {
         auto sample = datasets->get(i);
         auto data = sample.data;
@@ -455,12 +362,12 @@ void train() {
 
     // Data
     // Train
-    auto train_dataset = Urban100Dataset(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/train")
+    auto train_dataset = datasets::Urban100(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/train", 128)
             .map(torch::data::transforms::Stack<>());
     auto train_dataloader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
         std::move(train_dataset), 16);
     // Validation
-    auto val_dataset = Urban100Dataset(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/val")
+    auto val_dataset = datasets::Urban100(std::string(PROJECT_ROOT_DIR) + "/data/Urban100/val")
             .map(torch::data::transforms::Stack<>());
     auto val_dataloader = torch::data::make_data_loader<torch::data::samplers::SequentialSampler>(
         std::move(val_dataset), 1);

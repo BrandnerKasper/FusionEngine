@@ -4,8 +4,8 @@ cmake-build-*/
 .idea/
 # logs
 logs/
-# datasets
-datasets/
+# data for dataset classes
+data/
 # pytorch rocm
 libtorch/
 # trained models
