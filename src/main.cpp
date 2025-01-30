@@ -1,3 +1,4 @@
+#include "datasets/reds.h"
 #include "datasets/urban100.h"
 #include "models/sisr.h"
 #include "utils/utils.h"
@@ -8,7 +9,7 @@ void train() {
     // track logged info in separate file
     utils::setupLogger();
     // Net
-    auto net = std::make_shared<models::SISR>();
+    const auto net = std::make_shared<models::SISR>();
     net->to(torch::kCUDA);
 
     // Data
@@ -36,8 +37,8 @@ void train() {
 
         // train
         for (auto &batch: *train_dataloader) {
-            auto input = batch.data.to(torch::kCUDA);
-            auto target = batch.target.to(torch::kCUDA);
+            const auto input = batch.data.to(torch::kCUDA);
+            const auto target = batch.target.to(torch::kCUDA);
 
             optimizer.zero_grad();
             auto prediction = net->forward(input);
@@ -57,10 +58,10 @@ void train() {
             metrics::Metrics val_metrics {0.0, 0.0};
             size_t count = 0;
             for (auto &batch: *val_dataloader) {
-                auto input = batch.data.to(torch::kCUDA);
-                auto target = batch.target.to(torch::kCUDA);
+                const auto input = batch.data.to(torch::kCUDA);
+                const auto target = batch.target.to(torch::kCUDA);
 
-                auto prediction = net->forward(input);
+                const auto prediction = net->forward(input);
 
                 val_metrics += metrics::Metrics(prediction, target);
                 count++;

@@ -20,7 +20,6 @@ namespace datasets {
         int scale_factor;
     };
 
-    void testUrban100();
 }
 
 #endif //URBAN100_H
