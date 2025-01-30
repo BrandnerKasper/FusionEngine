@@ -40,6 +40,28 @@ namespace utils {
         }
     }
 
+    inline void vsrRandomCrop(std::vector<cv::Mat> &lr_imgs, cv::Mat &hr_img, const int crop_size, const int scale_factor) {
+        // Random top-left corner
+        const int x = static_cast<int>(utils::RANDOM() % (lr_imgs[0].cols - crop_size + 1));
+        const int y = static_cast<int>(utils::RANDOM() % (lr_imgs[0].rows - crop_size + 1));
+
+        // Crop LR images in-place
+        for (auto &lr_img: lr_imgs) {
+            lr_img = lr_img(cv::Rect(x, y, crop_size, crop_size));
+            if (!lr_img.isContinuous()) {
+                lr_img = lr_img.clone();
+            }
+        }
+
+        // Crop HR image in-place
+        hr_img = hr_img(
+            cv::Rect(x * scale_factor, y * scale_factor, crop_size * scale_factor, crop_size * scale_factor));
+
+        if (!hr_img.isContinuous()) {
+            hr_img = hr_img.clone();
+        }
+    }
+
     inline void showTensorAsCVImg(torch::Tensor lr_tensor, torch::Tensor hr_tensor) {
         // Ensure tensors are contiguous
         lr_tensor = lr_tensor.permute({1, 2, 0}).contiguous();
@@ -89,6 +111,67 @@ namespace utils {
 
         // Display the images
         cv::imshow("LR and HR Images", combined);
+        cv::waitKey(0);
+        cv::destroyAllWindows();
+    }
+
+
+    inline void showVSRData(torch::Tensor& lr_tensor, torch::Tensor& hr_tensor) {
+        // Ensure tensors are contiguous
+        hr_tensor = hr_tensor.permute({1, 2, 0}).contiguous(); // HR tensor (H x W x C)
+        std::cout << hr_tensor.sizes() << std::endl;
+
+        // Process HR tensor (same as before)
+        hr_tensor = hr_tensor.mul(255).clamp(0, 255).to(torch::kByte);
+        int hr_channels = hr_tensor.size(2); // Number of channels
+        cv::Mat hr_img;
+        if (hr_channels == 1) {
+            hr_img = cv::Mat(hr_tensor.size(0), hr_tensor.size(1), CV_8UC1, hr_tensor.data_ptr());
+        } else if (hr_channels == 3) {
+            hr_img = cv::Mat(hr_tensor.size(0), hr_tensor.size(1), CV_8UC3, hr_tensor.data_ptr());
+        } else {
+            std::cerr << "Unsupported number of channels in HR tensor: " << hr_channels << std::endl;
+            return;
+        }
+
+        // Process and display each LR frame
+        std::vector<cv::Mat> lr_images;
+        for (int i = 0; i < lr_tensor.size(0); ++i) {
+            torch::Tensor single_lr_tensor = lr_tensor[i].clone().permute({1, 2, 0}).contiguous();; // Get each LR frame (H x W x C)
+            std::cout << single_lr_tensor.sizes() << std::endl;
+
+            single_lr_tensor = single_lr_tensor.mul(255).clamp(0, 255).to(torch::kByte);
+            int lr_channels = single_lr_tensor.size(2); // Number of channels
+            cv::Mat lr_img;
+            if (lr_channels == 1) {
+                lr_img = cv::Mat(single_lr_tensor.size(0), single_lr_tensor.size(1), CV_8UC1,
+                                 single_lr_tensor.data_ptr());
+            } else if (lr_channels == 3) {
+                lr_img = cv::Mat(single_lr_tensor.size(0), single_lr_tensor.size(1), CV_8UC3,
+                                 single_lr_tensor.data_ptr());
+            } else {
+                std::cerr << "Unsupported number of channels in LR tensor: " << lr_channels << std::endl;
+                return;
+            }
+            // auto a = lr_img.clone();
+            lr_images.push_back(lr_img.clone());
+        }
+
+        // Concatenate LR images vertically (below each other)
+        cv::Mat lr_combined;
+        cv::Mat lr_combined1;
+        cv::Mat lr_combined2;
+        std::cout << lr_images.size() << std::endl;
+        cv::hconcat(lr_images[0], lr_images[1], lr_combined1); // Stack LR images vertically
+        cv::hconcat(lr_images[2], lr_images[3], lr_combined2);
+        cv::vconcat(lr_combined1, lr_combined2, lr_combined);
+
+        // Combine LR (stacked vertically) and HR image (side by side)
+        cv::Mat final_image;
+        cv::hconcat(lr_combined, hr_img, final_image); // Combine LR + HR horizontally
+
+        // Display the images
+        cv::imshow("LR and HR Images", final_image);
         cv::waitKey(0);
         cv::destroyAllWindows();
     }
