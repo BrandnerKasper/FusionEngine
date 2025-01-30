@@ -38,6 +38,8 @@ add_executable(FusionEngine
         src/models/sisr.cpp src/models/sisr.h
         src/metrics/metrics.cpp
         src/metrics/metrics.h
+        src/datasets/reds.cpp
+        src/datasets/reds.h
 )
 
 target_link_libraries(FusionEngine
@@ -51,6 +53,7 @@ add_executable(runTests
         src/utils/utils.h
         src/models/sisr.cpp src/models/sisr.h
         src/datasets/urban100.h src/datasets/urban100.cpp
+        src/datasets/reds.h src/datasets/reds.cpp
         tests/test_model.cpp
         tests/test_dataset.cpp
 )
