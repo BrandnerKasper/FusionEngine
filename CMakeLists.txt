@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the path to the LibTorch folder
 set(Torch_DIR "${CMAKE_SOURCE_DIR}/libtorch/share/cmake/Torch")
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libtorch;/opt/rocm")
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/libtorch;/opt/rocm-6.3.0")
 
 # Get the current source directory (the project root)
 set(PROJECT_ROOT_DIR "${CMAKE_SOURCE_DIR}")
