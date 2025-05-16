@@ -149,6 +149,10 @@ public:
     }
 
     void update(Player& player) {
+        // Update prev first so tail pos is free for player to move
+        if (const auto prev = player.getPrev(); prev.has_value())
+            m_body[findTile(prev.value())].icon = " ";
+
         bool generate_pellet = false;
         if (const auto next = player.getNext(); next.has_value()) {
             // Pellet
@@ -161,14 +165,11 @@ public:
             else if (m_body[findTile(next.value())].icon != " ")
                 GAME = false;
             // TODO Bug 1: snake should only be able to move into 3 directions
-            // TODO Bug 2: good -> game over when running into own body, but we update head first! -> possible to run into prev pos of tail
         }
 
         for (const auto& [icon, pos] : player.getBody()) {
             m_body[findTile(pos)].icon = icon;
         }
-        if (const auto prev = player.getPrev(); prev.has_value())
-            m_body[findTile(prev.value())].icon = " ";
 
         if (generate_pellet)
             generatePellet();
