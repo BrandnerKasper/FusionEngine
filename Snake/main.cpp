@@ -66,6 +66,9 @@ Action inputPooling() {
 #define TICK 400
 #define START_POSITION Position {6, 2}
 
+
+bool GAME = true;
+
 struct Position {
     int x {};
     int y {};
@@ -77,52 +80,130 @@ struct Position {
     }
 };
 
-using Tile = std::string;
-using Board = std::vector<std::vector<Tile>>;
 
-std::vector<std::string> splitUTF8Chars(const std::string& input) {
-    std::vector<std::string> result;
-    size_t i = 0;
-
-    while (i < input.size()) {
-        unsigned char c = input[i];
-        size_t char_len = 1;
-
-        if ((c & 0x80) == 0x00) char_len = 1;         // 1-byte (ASCII)
-        else if ((c & 0xE0) == 0xC0) char_len = 2;    // 2-byte
-        else if ((c & 0xF0) == 0xE0) char_len = 3;    // 3-byte
-        else if ((c & 0xF8) == 0xF0) char_len = 4;    // 4-byte
-        else throw std::runtime_error("Invalid UTF-8 encoding");
-
-        result.push_back(input.substr(i, char_len));
-        i += char_len;
-    }
-
-    return result;
-}
-
-
-Board convert(std::vector<std::string> board) {
-    Board b = {};
-    for (auto& line : board) {
-        std::vector<Tile> l = splitUTF8Chars(line);
-        b.push_back(l);
-    }
-    return b;
-}
-
-
-struct Player {
-    Tile icon = "■";
-    Position pos = START_POSITION;
-
-    void move(const Position& dir) {
-        pos += dir;
-    }
+struct Tile {
+    std::string icon {" "};
+    Position pos {};
 };
 
+class Player {
+public:
+    explicit Player(const std::string& icon = "■", const Position start_position = START_POSITION, const int body_length = 3)
+        : m_icon {icon}
+    {
+        // Create Body of player
+        for (int i {0}; i < body_length; ++i) {
+            m_body.push_back(Tile(icon, {start_position.x, start_position.y + i}));
+        }
+    }
 
-bool update(Player& player, const Action action, Board& board) {
+    [[nodiscard]] std::vector<Tile> getBody() const { return m_body;}
+
+    void move(const Position& dir) {
+        if (dir.x == 0 && dir.y == 0) {
+            next = std::nullopt;
+            prev = std::nullopt;
+            return;
+        }
+        prev = m_body[0].pos;
+        m_body[0].pos += dir;
+        next = m_body[0].pos;
+        auto next = prev;
+        for (auto i {1}; i < m_body.size(); ++i) {
+            prev = m_body[i].pos;
+            m_body[i].pos = next.value();
+            next = prev;
+        }
+    }
+
+    // TODO: Eat pellet
+
+    [[nodiscard]] std::optional<Position> getPrev() const {return prev;}
+    [[nodiscard]] std::optional<Position> getNext() const {return next;}
+
+private:
+    std::string m_icon {};
+    std::vector<Tile> m_body {};
+    std::optional<Position> prev {std::nullopt};
+    std::optional<Position> next {std::nullopt};
+};
+
+class Board {
+public:
+    explicit Board(const std::vector<std::string>& board) {
+        // Create body
+        // TODO: Create board based on a single int size!
+
+
+        for (auto i {0}; i < board.size(); ++i) {
+            std::vector<std::string> line = splitUTF8Chars(board[i]);
+            for (auto j {0}; j < line.size(); ++j)
+                m_body.push_back({line[j], {j, i}});
+        }
+    }
+
+    void update(const Player& player) {
+        if (const auto next = player.getNext(); next.has_value()) {
+            if (m_body[findTile(next.value())].icon != " ")
+                GAME = false;
+        }
+
+        for (const auto& [icon, pos] : player.getBody()) {
+            // TODO: Logic for handling game over?
+            // TODO: Eat pellets -> callback fct. in player?
+            m_body[findTile(pos)].icon = icon;
+        }
+        if (const auto prev = player.getPrev(); prev.has_value())
+            m_body[findTile(prev.value())].icon = " ";
+    }
+
+    [[nodiscard]] std::vector<Tile> getBody() const { return m_body;}
+
+
+private:
+    // void create(int size = 10) {
+    //     for (int i{0}; i< size; ++i) {
+    //         for (int j{0}; j < size; ++j) {
+    //             std::string icon {" "};
+    //             Position pos {j, i};
+    //             if (i == 0 || i == size-1) {
+    //                 icon = "─";
+    //                 if (j == 0) icon = "┌";
+    //                 if (j == size-1) icon = "┐";
+    //             }
+    //         }
+    //     }
+    // }
+    static std::vector<std::string> splitUTF8Chars(const std::string& input) {
+        std::vector<std::string> result;
+        size_t i = 0;
+
+        while (i < input.size()) {
+            unsigned char c = input[i];
+            size_t char_len = 1;
+
+            if ((c & 0x80) == 0x00) char_len = 1;         // 1-byte (ASCII)
+            else if ((c & 0xE0) == 0xC0) char_len = 2;    // 2-byte
+            else if ((c & 0xF0) == 0xE0) char_len = 3;    // 3-byte
+            else if ((c & 0xF8) == 0xF0) char_len = 4;    // 4-byte
+            else throw std::runtime_error("Invalid UTF-8 encoding");
+
+            result.push_back(input.substr(i, char_len));
+            i += char_len;
+        }
+
+        return result;
+    }
+
+    static int findTile(const Position pos) {
+        return pos.x + 14 * pos.y;
+    }
+
+private:
+    std::vector<Tile> m_body {};
+};
+
+void update(Player& player, const Action action, Board& board) {
     Position dir = {0, 0};
 
     switch (action) {
@@ -139,30 +220,24 @@ bool update(Player& player, const Action action, Board& board) {
             dir.x += 1;
             break;
         case Action::Quit:
-            return false;
+            GAME = false;
         default:
             break;
     }
 
-    // Move player
-    board[player.pos.y][player.pos.x] = " ";
     player.move(dir);
-    if (board[player.pos.y][player.pos.x] != " ") return false;
-    board[player.pos.y][player.pos.x] = player.icon;
-
-    return true;
+    board.update(player);
 }
-
 
 void render(const Board& board) {
-    for (auto& line : board) {
-        for (const auto& icon : line) {
-            std::cout << icon;
-        }
-        std::cout << std::endl;
+    int counter {0};
+    for (const auto& [icon, pos] : board.getBody()) {
+        std::cout << icon;
+        ++counter;
+        if (counter % 14 == 0) // TODO MAGIC NUMBER
+            std::cout << std::endl;
     }
 }
-
 
 void sleep(const int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
@@ -178,21 +253,29 @@ int main() {
         "┌────────────┐",
         "│            │",
         "│     ■      │",
-        "│        ▫   │",
+        "│     ■  ▫   │",
+        "│     ■      │",
+        "│            │",
+        "│            │",
+        "│            │",
+        "│            │",
+        "│            │",
+        "│            │",
+        "│            │",
+        "│            │",
         "└────────────┘"
-    };
-    auto board = convert(b);
+    }; // YES this is quadratic 14 x 14
+    Board board {b};
 
     auto player = Player{};
-
+    //
     setNonBlockingInput(true);
-    bool game = true;
-    while (game) {
+    while (GAME) {
         // Input
         auto input = inputPooling();
 
         // Logic
-        game = update(player, input, board);
+        update(player, input, board);
 
         // Render
         render(board);
