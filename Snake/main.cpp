@@ -117,6 +117,10 @@ public:
     }
 
     // TODO: Eat pellet
+    void eat() {
+        m_body.push_back({m_icon, prev.value()});
+        prev = std::nullopt;
+    }
 
     [[nodiscard]] std::optional<Position> getPrev() const {return prev;}
     [[nodiscard]] std::optional<Position> getNext() const {return next;}
@@ -142,9 +146,13 @@ public:
         }
     }
 
-    void update(const Player& player) {
+    void update(Player& player) {
         if (const auto next = player.getNext(); next.has_value()) {
-            if (m_body[findTile(next.value())].icon != " ")
+            // Pellet
+            if (m_body[findTile(next.value())].icon == "▫")
+                player.eat();
+            // Wall
+            else if (m_body[findTile(next.value())].icon != " ")
                 GAME = false;
         }
 
