@@ -65,8 +65,8 @@ Action inputPooling() {
 
 #pragma region Game
 
-#define TICK 400
-#define START_POSITION Position {6, 2}
+#define TICK 800
+#define START_POSITION Position {1, 2}
 
 
 bool GAME = true;
@@ -87,6 +87,28 @@ struct Tile {
     std::string icon {" "};
     Position pos {};
 };
+
+Position getDirectionFromAction(const Action action) {
+    Position dir {0, 0};
+    switch (action) {
+        case Action::Up:
+            dir.y -= 1;
+            break;
+        case Action::Left:
+            dir.x -= 1;
+            break;
+        case Action::Down:
+            dir.y += 1;
+            break;
+        case Action::Right:
+            dir.x += 1;
+            break;
+        default:
+            std::cerr << std::format("Action not set!");
+            break;
+    }
+    return dir;
+}
 
 class Player {
 public:
@@ -118,7 +140,32 @@ public:
         }
     }
 
-    // TODO: Eat pellet
+    void setAction(const Action action) {
+        // Default action should not overwrite our last movement action
+        if (action == Action::Default)
+            return;
+        // Don't move into opposite dir
+        const auto [cur_x, cur_y] = getDirectionFromAction(m_action);
+        const auto [new_x, new_y] = getDirectionFromAction(action);
+        if (cur_x * -1 == new_x || cur_y * -1 == new_y)
+            return;
+        m_action = action;
+    }
+
+    void update() {
+        Position dir = getDirectionFromAction(m_action);
+
+        prev = m_body[0].pos;
+        m_body[0].pos += dir;
+        next = m_body[0].pos;
+        auto next = prev;
+        for (auto i {1}; i < m_body.size(); ++i) {
+            prev = m_body[i].pos;
+            m_body[i].pos = next.value();
+            next = prev;
+        }
+    }
+
     void eat() {
         m_body.push_back({m_icon, prev.value()});
         prev = std::nullopt;
@@ -132,20 +179,32 @@ private:
     std::vector<Tile> m_body {};
     std::optional<Position> prev {std::nullopt};
     std::optional<Position> next {std::nullopt};
+    Action m_action {Action::Right};
 };
 
 class Board {
 public:
+    // Based on ASCII art
     explicit Board(const std::vector<std::string>& board) {
-        // Create body
-        // TODO: Create board based on a single int size!
-
-
+        m_size = static_cast<int>(board[0].size());
         for (auto i {0}; i < board.size(); ++i) {
             std::vector<std::string> line = splitUTF8Chars(board[i]);
             for (auto j {0}; j < line.size(); ++j)
                 m_body.push_back({line[j], {j, i}});
         }
+    }
+
+    // Based on size (quadratic)
+    explicit Board(const Player& player, const int size = 10)
+        : m_size(size) {
+        create();
+
+        // This could be done by the game class -> we should take the ref of the player out here
+        for (const auto& [icon, pos] : player.getBody()) {
+            m_body[findTile(pos)].icon = icon;
+        }
+
+        generatePellet();
     }
 
     void update(Player& player) {
@@ -158,7 +217,6 @@ public:
             // Pellet
             if (m_body[findTile(next.value())].icon == "▫") {
                 player.eat();
-                // TODO generate new pellet!
                 generate_pellet = true;
             }
             // Wall
@@ -176,22 +234,34 @@ public:
     }
 
     [[nodiscard]] std::vector<Tile> getBody() const { return m_body;}
+    [[nodiscard]] int getSize() const { return m_size;}
 
 
 private:
-    // void create(int size = 10) {
-    //     for (int i{0}; i< size; ++i) {
-    //         for (int j{0}; j < size; ++j) {
-    //             std::string icon {" "};
-    //             Position pos {j, i};
-    //             if (i == 0 || i == size-1) {
-    //                 icon = "─";
-    //                 if (j == 0) icon = "┌";
-    //                 if (j == size-1) icon = "┐";
-    //             }
-    //         }
-    //     }
-    // }
+    void create() {
+        std::string icon {};
+        for (int i{0}; i< m_size; ++i) {
+            for (int j{0}; j < m_size; ++j) {
+                icon = " ";
+                Position pos {j, i};
+                if (i == 0) {
+                    icon = "─";
+                    if (j == 0) icon = "┌";
+                    if (j == m_size-1) icon = "┐";
+                }
+                else if (i == m_size-1) {
+                    icon = "─";
+                    if (j == 0) icon = "└";
+                    if (j == m_size-1) icon = "┘";
+                }
+                else if (j == 0 || j == m_size-1) {
+                    icon = "│";
+                }
+                m_body.push_back({icon, {j, i}});
+            }
+        }
+    }
+
     static std::vector<std::string> splitUTF8Chars(const std::string& input) {
         std::vector<std::string> result;
         size_t i = 0;
@@ -213,8 +283,8 @@ private:
         return result;
     }
 
-    static int findTile(const Position pos) {
-        return pos.x + 14 * pos.y;
+    [[nodiscard]] int findTile(const Position pos) const {
+        return pos.x + m_size * pos.y;
     }
 
     void generatePellet() {
@@ -223,46 +293,41 @@ private:
             if (m_body[i].icon == " ")
                 poss_spawn_pos.push_back(i);
         }
-        const auto random_pos = Random::get(0, static_cast<int>(poss_spawn_pos.size())-1);
+        const auto random_idx = Random::get<size_t>(0, (poss_spawn_pos.size()-1));
+        const auto random_pos = poss_spawn_pos[random_idx];
         m_body[random_pos].icon = "▫";
     }
 
 private:
     std::vector<Tile> m_body {};
+    int m_size {};
 };
 
 void update(Player& player, const Action action, Board& board) {
-    Position dir = {0, 0};
 
     switch (action) {
-        case Action::Up:
-            dir.y -= 1;
-            break;
-        case Action::Left:
-            dir.x -= 1;
-            break;
-        case Action::Down:
-            dir.y += 1;
-            break;
-        case Action::Right:
-            dir.x += 1;
-            break;
         case Action::Quit:
             GAME = false;
         default:
             break;
     }
 
-    player.move(dir);
+    player.setAction(action);
+    player.update();
     board.update(player);
 }
 
 void render(const Board& board) {
-    int counter {0};
+    int length {};
+    for (auto& [icon, pos]: board.getBody()) {
+        if (icon == "┐") length = pos.x + 1;
+    }
+
+    int counter = {0};
     for (const auto& [icon, pos] : board.getBody()) {
         std::cout << icon;
         ++counter;
-        if (counter % 14 == 0) // TODO MAGIC NUMBER
+        if (counter % length == 0)
             std::cout << std::endl;
     }
 }
@@ -293,9 +358,8 @@ int main() {
         "│            │",
         "└────────────┘"
     }; // YES this is quadratic 14 x 14
-    Board board {b};
-
     auto player = Player{};
+    Board board {player, 10};
     //
     setNonBlockingInput(true);
     while (GAME) {
