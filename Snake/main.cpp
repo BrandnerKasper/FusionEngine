@@ -66,7 +66,7 @@ Action inputPooling() {
 #pragma region Game
 
 #define TICK 800
-#define START_POSITION Position {1, 2}
+#define START_POSITION Position {6, 2}
 
 
 bool GAME = true;
@@ -112,8 +112,8 @@ Position getDirectionFromAction(const Action action) {
 
 class Player {
 public:
-    explicit Player(const std::string& icon = "■", const Position start_position = START_POSITION, const int body_length = 3)
-        : m_icon {icon}
+    explicit Player(const Position start_position = START_POSITION, const Action action = Action::Up, const int body_length = 3, const std::string& icon = "■")
+        : m_icon {icon}, m_action{action}
     {
         // Create Body of player
         for (int i {0}; i < body_length; ++i) {
@@ -124,6 +124,7 @@ public:
     [[nodiscard]] std::vector<Tile> getBody() const { return m_body;}
 
     void move(const Position& dir) {
+        // Could be removed
         if (dir.x == 0 && dir.y == 0) {
             next = std::nullopt;
             prev = std::nullopt;
@@ -153,7 +154,7 @@ public:
     }
 
     void update() {
-        Position dir = getDirectionFromAction(m_action);
+        const Position dir = getDirectionFromAction(m_action);
 
         prev = m_body[0].pos;
         m_body[0].pos += dir;
@@ -179,7 +180,7 @@ private:
     std::vector<Tile> m_body {};
     std::optional<Position> prev {std::nullopt};
     std::optional<Position> next {std::nullopt};
-    Action m_action {Action::Right};
+    Action m_action {};
 };
 
 class Board {
@@ -358,15 +359,16 @@ int main() {
         "│            │",
         "└────────────┘"
     }; // YES this is quadratic 14 x 14
-    auto player = Player{};
+    auto player = Player{{5, 5}};
     Board board {player, 10};
     //
     setNonBlockingInput(true);
     while (GAME) {
         // Input
-        auto input = inputPooling();
+        const auto input = inputPooling();
 
         // Logic
+        // TODO: split logic update from Render Tick time -> player should have more time to move the snake
         update(player, input, board);
 
         // Render
