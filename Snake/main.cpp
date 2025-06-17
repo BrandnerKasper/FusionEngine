@@ -10,7 +10,7 @@
 #include "random.h"
 
 #pragma region INPUT
-void setNonBlockingInput(bool enable) {
+void setNonBlockingInput(const bool enable) {
     static struct termios oldt, newt;
 
     if (enable) {
@@ -32,42 +32,47 @@ enum class Action {
     Down,
     Right,
     Quit,
-    Default
 };
 
 
-Action inputPooling() {
-    if (const char ch = getchar(); ch != EOF) {
+void inputPooling(Action& input) {
+    if (const char ch = static_cast<char>(getchar()); ch != EOF) {
         switch (ch) {
             case 'w': case 'W':
                 std::cout << "UP\n";
-                return Action::Up;
+                input = Action::Up;
+                break;
             case 'a': case 'A':
                 std::cout << "LEFT\n";
-                return Action::Left;
+                input = Action::Left;
+                break;
             case 's': case 'S':
                 std::cout << "DOWN\n";
-                return Action::Down;
+                input = Action::Down;
+                break;
             case 'd': case 'D':
                 std::cout << "RIGHT\n";
-                return Action::Right;
+                input = Action::Right;
+                break;
             case 'q': case 'Q':
                 std::cout << "QUIT\n";
-                return Action::Quit;
+                input =  Action::Quit;
+                break;
             default:
-                std::cout << "DEFAULT\n";
-                return Action::Default;
+                std::cout << "DO THE LAST INPUT ACTION!\n";
         }
     }
-    return Action::Default;
 }
 #pragma endregion
 
 #pragma region Game
 
-#define TICK 800
+// TODO REFACTOR THIS
 #define START_POSITION Position {6, 2}
 
+constexpr auto TICK = std::chrono::milliseconds(1200);
+constexpr auto FRAME_TIME = std::chrono::milliseconds(200);
+using CLOCK = std::chrono::steady_clock;
 
 bool GAME = true;
 
@@ -102,6 +107,8 @@ Position getDirectionFromAction(const Action action) {
             break;
         case Action::Right:
             dir.x += 1;
+            break;
+        case Action::Quit:
             break;
         default:
             std::cerr << std::format("Action not set!");
@@ -142,9 +149,6 @@ public:
     }
 
     void setAction(const Action action) {
-        // Default action should not overwrite our last movement action
-        if (action == Action::Default)
-            return;
         // Don't move into opposite dir
         const auto [cur_x, cur_y] = getDirectionFromAction(m_action);
         const auto [new_x, new_y] = getDirectionFromAction(action);
@@ -361,21 +365,31 @@ int main() {
     }; // YES this is quadratic 14 x 14
     auto player = Player{{5, 5}};
     Board board {player, 10};
-    //
+
     setNonBlockingInput(true);
+
+    auto lastUpdate = CLOCK::now();;
+    auto lastRender = CLOCK::now();;
+    auto input = Action::Up;
+
     while (GAME) {
+        // Time Management
+        auto currentTime = CLOCK::now();
+
         // Input
-        const auto input = inputPooling();
+        inputPooling(input);
 
         // Logic
-        // TODO: split logic update from Render Tick time -> player should have more time to move the snake
-        update(player, input, board);
+        if (currentTime - lastUpdate >= TICK) {
+            update(player, input, board);
+            lastUpdate = CLOCK::now();
+        }
 
         // Render
-        render(board);
-
-        // Sleep
-        sleep(TICK);
+        if (currentTime-lastRender >= FRAME_TIME) {
+            render(board);
+            lastRender = CLOCK::now();
+        }
     }
 
     return 0;
