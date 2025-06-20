@@ -6,4 +6,11 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(Snake
         main.cpp
-        random.h)
+        random.h
+        Player.cpp
+        Player.h
+        input.cpp
+        input.h
+        types.h
+        Board.cpp
+        Board.h)
