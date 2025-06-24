@@ -14,11 +14,9 @@ public:
 
     [[nodiscard]] std::vector<Types::Tile> getBody() const { return m_body;}
 
-    void move(const Types::Position& dir);
-
     void setAction(Input::Action action);
 
-    void update();
+    void move(Input::Action action);
 
     void eat();
 

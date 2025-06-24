@@ -1,29 +1,18 @@
 #pragma once
-#include <vector>
-#include <string>
+#include <array>
 
-#include "Player.h"
+#include "settings.h"
 #include "types.h"
 
 
-class Board {
-public:
-    explicit Board(const std::vector<std::string>& board);
-    explicit Board(Player& player, int size);
+struct Board {
+    explicit Board();
 
-    void update(Player& player);
-    [[nodiscard]] std::vector<Types::Tile> getBody() const { return m_body;}
-    [[nodiscard]] int getSize() const { return m_size;}
-
-private:
-    void create();
+    void draw();
     void generatePellet();
-    [[nodiscard]] int findTile(const Types::Position pos) const {
-        return pos.x + m_size * pos.y;
+    [[nodiscard]] size_t findIdxOfPos(const Types::Position pos) const {
+        return pos.x + Settings::BOARD_SIZE * pos.y;
     }
 
-private:
-    // TODO: use std::array!!
-    std::vector<Types::Tile> m_body;
-    int m_size;
+    std::array<Types::Tile, Settings::BOARD_SIZE * Settings::BOARD_SIZE> body;
 };

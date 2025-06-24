@@ -13,4 +13,7 @@ add_executable(Snake
         input.h
         types.h
         Board.cpp
-        Board.h)
+        Board.h
+        Game.cpp
+        Game.h
+        settings.h)
