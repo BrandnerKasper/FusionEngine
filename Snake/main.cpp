@@ -1,21 +1,9 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include "Game.h"
 
 
 int main() {
+    Game game {};
+    game.run();
 
-
-    std::vector<std::string> board = {
-        "┌────────────┐",
-        "│     ■      │",
-        "│            │",
-        "│        ▫   │",
-        "└────────────┘"
-    };
-
-    for (auto& line : board) {
-        std::cout << line << std::endl;
-    }
-
+    return 0;
 }
