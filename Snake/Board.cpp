@@ -51,4 +51,14 @@ void Board::generatePellet() {
     body[random_pos].icon = "▫";
 }
 
+void Board::setValue(const Types::Position& pos, const std::string_view icon) {
+    const size_t idx = pos.x + Settings::BOARD_SIZE * pos.y;
+    body[idx].icon = icon;
+}
+
+std::string Board::getValue(const Types::Position& pos) {
+    const size_t idx = pos.x + Settings::BOARD_SIZE * pos.y;
+    return body[idx].icon;
+}
+
 

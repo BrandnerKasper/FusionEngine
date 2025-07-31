@@ -13,8 +13,8 @@ Game::Game()
     // Start with Up movement
     m_input = Input::Up;
     // Set player in board
-    for (const auto& [icon, pos] : m_player.getBody()) {
-        m_board.body[m_board.findIdxOfPos(pos)].icon = icon;
+    for (const auto& [icon, pos] : m_player.body) {
+        m_board.setValue(pos, icon);
     }
     // Generate first pellet
     m_board.generatePellet();
@@ -46,24 +46,26 @@ bool Game::update() {
     m_player.move(m_input);
 
     // Update prev first so tail pos is free for player to move
-    if (const auto prev = m_player.getPrev(); prev.has_value())
-        m_board.body[m_board.findIdxOfPos(prev.value())].icon = " ";
+    const auto tail = m_player.tail;
+    if (tail.has_value())
+        m_board.setValue(tail.value(), " ");
 
     bool generate_pellet = false;
     bool hitWall = false;
-    if (const auto next = m_player.getNext(); next.has_value()) {
+    const auto head = m_player.head;
+    if (head.has_value()) {
         // Pellet
-        if (m_board.body[m_board.findIdxOfPos(next.value())].icon == "▫") {
+        if (m_board.getValue(head.value()) == "▫") {
             m_player.eat();
             generate_pellet = true;
         }
         // Wall
-        else if (m_board.body[m_board.findIdxOfPos(next.value())].icon != " ")
+        else if (m_board.getValue(head.value()) != " ")
             hitWall = true;
     }
 
-    for (const auto& [icon, pos] : m_player.getBody()) {
-        m_board.body[m_board.findIdxOfPos(pos)].icon = icon;
+    for (const auto& [icon, pos] : m_player.body) {
+        m_board.setValue(pos, icon);
     }
 
     if (generate_pellet)

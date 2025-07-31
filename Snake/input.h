@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 namespace Input {
     enum Action {
         Up,
@@ -12,6 +14,8 @@ namespace Input {
     void setNonBlockingInput(bool enable);
 
     void inputPooling(Action& input);
+
+    Types::Position getDirectionFromAction(Input::Action action);
 }
 
 

@@ -10,9 +10,9 @@ struct Board {
 
     void draw();
     void generatePellet();
-    [[nodiscard]] size_t findIdxOfPos(const Types::Position pos) const {
-        return pos.x + Settings::BOARD_SIZE * pos.y;
-    }
+
+    void setValue(const Types::Position& pos, std::string_view icon);
+    std::string getValue(const Types::Position& pos);
 
     std::array<Types::Tile, Settings::BOARD_SIZE * Settings::BOARD_SIZE> body;
 };

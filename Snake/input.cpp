@@ -47,3 +47,29 @@ void Input::inputPooling(Action &input) {
         }
     }
 }
+
+Types::Position Input::getDirectionFromAction(const Input::Action action) {
+    Types::Position dir {0, 0};
+    switch (action) {
+        case Input::Up:
+            dir.y -= 1;
+            break;
+        case Input::Left:
+            dir.x -= 1;
+            break;
+        case Input::Down:
+            dir.y += 1;
+            break;
+        case Input::Right:
+            dir.x += 1;
+            break;
+        case Input::Quit:
+            break;
+        default:
+            std::cerr << "Action not set!" << std::endl;
+            break;
+    }
+    return dir;
+}
+
+
