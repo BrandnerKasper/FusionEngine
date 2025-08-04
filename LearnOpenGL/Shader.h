@@ -10,6 +10,7 @@ namespace fs = std::filesystem;
 class Shader {
 public:
     Shader(const fs::path& vertexPath, const fs::path& fragmentPath);
+    virtual ~Shader();
 
     void use() const;
 
@@ -17,9 +18,6 @@ public:
     void setInt(std::string_view name, int val) const;
     void setFloat(std::string_view name, float val) const;
 
-public:
-    unsigned int ID;
-
 private:
-    static std::string loadShaderAsset(const fs::path& asset);
+    unsigned int ID;
 };
