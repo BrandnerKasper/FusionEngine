@@ -6,7 +6,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set variables for source files
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp
+        Shader.h
+        Shader.cpp
+        Assets.h)
+
 # set executable name
 set(EXE_FILE OpenGLRenderer)
 
@@ -34,3 +38,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm)
+
+# define asset root
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
+
+# copy assets to output directory before build
+add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
