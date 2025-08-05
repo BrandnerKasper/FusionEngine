@@ -63,15 +63,3 @@ Shader::~Shader() {
 void Shader::use() const {
     glUseProgram(ID);
 }
-
-template<typename T>
-void Shader::setValue(const std::string_view name, const T val) const {
-    GLint loc = glGetUniformLocation(ID, name.data());
-    if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, int>) {
-        glUniform1i(loc, static_cast<int>(val));
-    } else if constexpr (std::is_same_v<T, float>) {
-        glUniform1f(loc, val);
-    } else {
-        static_assert(sizeof(T) == 0, "Unsupported uniform type for setVal");
-    }
-}
