@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "Shader.h"
 
 // Draw a triangle
@@ -14,9 +16,15 @@ float vertices[] = {
      0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top
 };
 
-unsigned int indices[] = { // note that we start from 0!
-    0, 1, 2, // first triangle
-    // 1, 2, 3 // second triangle
+unsigned int indices[] = {
+    0, 1, 2 // first triangle
+};
+
+float texCoords[] = {
+    // x  y
+    0.0f, 0.0f, // left bottom
+    1.0f, 0.0f, // right bottom
+    0.5f, 1.0f  // center top
 };
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {

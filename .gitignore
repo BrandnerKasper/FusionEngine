@@ -11,4 +11,5 @@ libtorch/
 # trained models
 *.pt
 # OpenGL context
-glad/
+extern/
+textures/

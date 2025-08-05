@@ -27,7 +27,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glfw)
 
 # GLAD
-add_subdirectory(glad)
+add_subdirectory(extern/glad)
 
 # GLM
 FetchContent_Declare(
@@ -46,3 +46,6 @@ target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
 add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
+
+# add extern to include dirs so header only libs are easy to find
+target_include_directories(${EXE_FILE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern)
