@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <string>
+#include <string_view>
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -14,9 +13,8 @@ public:
 
     void use() const;
 
-    void setBool(std::string_view name, bool val) const;
-    void setInt(std::string_view name, int val) const;
-    void setFloat(std::string_view name, float val) const;
+    template<typename T>
+    void setValue(std::string_view name, T val) const;
 
 private:
     unsigned int ID;
