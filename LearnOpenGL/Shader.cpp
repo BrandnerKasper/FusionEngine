@@ -57,7 +57,7 @@ Shader::Shader(const fs::path &vertexPath, const fs::path &fragmentPath) {
 }
 
 Shader::~Shader() {
-    glDeleteProgram(ID); // TODO: right now that get's called after gltf terminate, should be before!! -> make class for window or game
+    glDeleteProgram(ID);
 }
 
 void Shader::use() const {
