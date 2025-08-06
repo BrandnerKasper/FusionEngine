@@ -9,7 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCE_FILES main.cpp
         Shader.h
         Shader.cpp
-        Assets.h)
+        Assets.h
+        Game.cpp
+        Game.h)
 
 # set executable name
 set(EXE_FILE OpenGLRenderer)
