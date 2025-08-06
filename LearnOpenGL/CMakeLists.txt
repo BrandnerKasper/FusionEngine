@@ -41,13 +41,21 @@ FetchContent_MakeAvailable(glm)
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm)
 
-# define asset root
+# define asset root TODO: use local asset folder
 target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
 
-# copy assets to output directory before build
-add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+# copies the asset files everytime we compile our project
+add_custom_target(copy_assets ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${EXE_FILE}>/assets
+)
+add_dependencies(${EXE_FILE} copy_assets)
+
+# copy assets to output directory before build
+#add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy_directory
+#        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
 
 # add extern to include dirs so header only libs are easy to find
 target_include_directories(${EXE_FILE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern)
