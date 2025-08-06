@@ -5,10 +5,11 @@ in vec3 ourColor;
 in vec4 ourPos;
 in vec2 TexCoord;
 
-uniform sampler2D ourTexture;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 void main() {
 //    fragColor = vec4(ourColor, 1.0);
 //    fragColor = ourPos; // negative vals get clamped to 0.0 = black!
-    fragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
+    fragColor = mix(texture(texture1, TexCoord) * vec4(ourColor, 1.0), texture(texture2, TexCoord), 0.2);
 }

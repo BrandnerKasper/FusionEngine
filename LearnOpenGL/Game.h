@@ -20,5 +20,7 @@ private:
 
     unsigned int m_VBO, m_VAO, m_EBO;
 
-    std::string_view m_texture_path {"textures/container.jpg"};
+    std::string_view m_texture_path1 {"textures/container.jpg"};
+    std::string_view m_texture_path2 {"textures/awesomeface.png"};
+    unsigned int texture1, texture2;
 };
