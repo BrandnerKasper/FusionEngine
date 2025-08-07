@@ -11,10 +11,10 @@
 // Draw a rectangle
 float vertices[] = {
     // positions        // colors         // texture coords
-    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 2.0f, 2.0f, // top right
-    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 2.0f, 0.0f, // bottom right
-   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 2.0f  // top left
+    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.55f, 0.55f, // top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.55f, 0.45f, // bottom right
+   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.45f, 0.45f, // bottom left
+   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f  // top left
 };
 
 unsigned int indices[] = {
@@ -22,6 +22,7 @@ unsigned int indices[] = {
     2, 3, 0  // second triangle
 };
 
+// is not actually used
 float texCoords[] = {
     // x  y
     0.0f, 0.0f, // left bottom
@@ -29,13 +30,8 @@ float texCoords[] = {
     0.5f, 1.0f  // center top
 };
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 }
 
 void createTexture(unsigned int& texture, const std::string_view path, const bool transparent = false) {
@@ -43,10 +39,10 @@ void createTexture(unsigned int& texture, const std::string_view path, const boo
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     // set the texture wrapping/filtering options (on currently bound texture)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // load and generate the texture
     int width, height, nrChannels;
     unsigned char *data = stbi_load(assets::path(path).c_str(), &width, &height,
@@ -140,15 +136,11 @@ void Game::run() const {
     // render loop
     while(!glfwWindowShouldClose(m_window)) {
         // input
-        processInput(m_window);
+        processInput();
 
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        // Shader hot reload
-        // TODO maybe add hot key for hot reload
-        m_shader->checkReload();
 
         // draw our first triangle
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -165,4 +157,13 @@ Game::~Game() {
     glDeleteBuffers(1, &m_EBO);
     m_shader.reset();
     glfwTerminate();
+}
+
+void Game::processInput() const {
+    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(m_window, true);
+
+    // Shader hot reload
+    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
+        m_shader->checkReload();
 }

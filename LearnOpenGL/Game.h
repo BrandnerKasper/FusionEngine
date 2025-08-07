@@ -12,6 +12,9 @@ public:
     virtual ~Game();
 
 private:
+    void processInput() const;
+
+private:
     GLFWwindow* m_window;
 
     std::string_view m_vertex_shader_path {"shaders/vertex.vert"};
