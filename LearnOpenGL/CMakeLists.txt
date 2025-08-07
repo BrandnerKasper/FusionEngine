@@ -41,21 +41,28 @@ FetchContent_MakeAvailable(glm)
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm)
 
-# define asset root TODO: use local asset folder
-target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
+# define asset root
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(ASSET_ROOT ./assets/)
+else ()
+    set(ASSET_ROOT ${CMAKE_SOURCE_DIR}/assets/)
+endif ()
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${ASSET_ROOT}")
 
 # copies the asset files everytime we compile our project
-add_custom_target(copy_assets ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets
-        $<TARGET_FILE_DIR:${EXE_FILE}>/assets
-)
-add_dependencies(${EXE_FILE} copy_assets)
-
-# copy assets to output directory before build
-#add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+#add_custom_target(copy_assets ALL
 #        COMMAND ${CMAKE_COMMAND} -E copy_directory
-#        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
+#        ${CMAKE_SOURCE_DIR}/assets
+#        $<TARGET_FILE_DIR:${EXE_FILE}>/assets
+#)
+#add_dependencies(${EXE_FILE} copy_assets)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    # copy assets to output directory before build
+    add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
+endif ()
 
 # add extern to include dirs so header only libs are easy to find
 target_include_directories(${EXE_FILE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern)

@@ -99,11 +99,8 @@ Game::Game() {
     createTexture(texture1, m_texture_path1);
     createTexture(texture2, m_texture_path2, true);
 
-    // Shader (important to do it here -> whe have to have a OpenGL context active!)
+    // Shader (important to do it here -> we have to have a OpenGL context active!)
     m_shader = std::make_unique<Shader>(m_vertex_shader_path, m_fragment_shader_path);
-    m_shader->use();
-    m_shader->setValue("texture1", 0);
-    m_shader->setValue("texture2", 1);
 
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -148,6 +145,10 @@ void Game::run() const {
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Shader hot reload
+        // TODO maybe add hot key for hot reload
+        m_shader->checkReload();
 
         // draw our first triangle
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

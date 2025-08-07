@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 class Shader {
 public:
-    Shader(const fs::path& vertexPath, const fs::path& fragmentPath);
+    Shader(fs::path  vertexPath, fs::path  fragmentPath);
     virtual ~Shader();
 
     void use() const;
@@ -16,8 +16,17 @@ public:
     template<typename T>
     void setValue(const std::string& name, T val) const;
 
+    void checkReload();
+
+private:
+    void create();
+    void reload();
+
 private:
     unsigned int ID;
+    fs::path m_vertexShader;
+    fs::path m_fragmentShader;
+    fs::file_time_type m_vsTime, m_fsTime;
 };
 
 template<typename T>

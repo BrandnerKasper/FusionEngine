@@ -2,6 +2,7 @@
 #include <sstream>
 #include <format>
 #include <print>
+#include <utility>
 #include <glad/glad.h>
 
 #include "Shader.h"
@@ -35,12 +36,37 @@ unsigned int createShader(const fs::path& asset, GLuint type) {
 }
 
 
-Shader::Shader(const fs::path &vertexPath, const fs::path &fragmentPath) {
-    const auto vertexShader = createShader(vertexPath, GL_VERTEX_SHADER);
-    const auto fragmentShader = createShader(fragmentPath, GL_FRAGMENT_SHADER);
+Shader::Shader(fs::path vertexPath, fs::path fragmentPath)
+    : m_vertexShader{std::move(vertexPath)}, m_fragmentShader{std::move(fragmentPath)},
+      m_vsTime{fs::last_write_time(assets::path(m_vertexShader))}, m_fsTime{fs::last_write_time(assets::path(m_fragmentShader))} {
+    create();
+}
+
+Shader::~Shader() {
+    glDeleteProgram(ID);
+}
+
+void Shader::use() const {
+    glUseProgram(ID);
+}
+
+void Shader::checkReload() {
+    const auto currVsTime {fs::last_write_time(assets::path(m_vertexShader))};
+    const auto currFSTime {fs::last_write_time(assets::path(m_fragmentShader))};
+    if (currVsTime != m_vsTime || currFSTime != m_fsTime) {
+        std::println("Shader hot-reloaded!");
+        m_vsTime = currVsTime;
+        m_fsTime = currFSTime;
+        reload();
+    }
+}
+
+void Shader::create() {
+    const auto vertexShader = createShader(m_vertexShader, GL_VERTEX_SHADER);
+    const auto fragmentShader = createShader(m_fragmentShader, GL_FRAGMENT_SHADER);
 
     // Shader Program
-    ID =  glCreateProgram();
+    ID = glCreateProgram();
     glAttachShader(ID, vertexShader);
     glAttachShader(ID, fragmentShader);
     glLinkProgram(ID);
@@ -54,12 +80,13 @@ Shader::Shader(const fs::path &vertexPath, const fs::path &fragmentPath) {
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    // don't know if we should set that here
+    use();
+    setValue("texture1", 0);
+    setValue("texture2", 1);
 }
 
-Shader::~Shader() {
+void Shader::reload() {
     glDeleteProgram(ID);
-}
-
-void Shader::use() const {
-    glUseProgram(ID);
+    create();
 }
