@@ -11,10 +11,10 @@
 // Draw a rectangle
 float vertices[] = {
     // positions        // colors         // texture coords
-    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.55f, 0.55f, // top right
-    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.55f, 0.45f, // bottom right
-   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.45f, 0.45f, // bottom left
-   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f  // top left
+    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
 };
 
 unsigned int indices[] = {
@@ -39,10 +39,10 @@ void createTexture(unsigned int& texture, const std::string_view path, const boo
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     // set the texture wrapping/filtering options (on currently bound texture)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load and generate the texture
     int width, height, nrChannels;
     unsigned char *data = stbi_load(assets::path(path).c_str(), &width, &height,
@@ -132,7 +132,7 @@ Game::Game() {
     glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
-void Game::run() const {
+void Game::run() {
     // render loop
     while(!glfwWindowShouldClose(m_window)) {
         // input
@@ -159,11 +159,20 @@ Game::~Game() {
     glfwTerminate();
 }
 
-void Game::processInput() const {
+void Game::processInput() {
     if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window, true);
 
     // Shader hot reload
     if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
         m_shader->checkReload();
+
+    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS) {
+        m_mix += 0.05;
+        m_shader->setValue("ourMix", m_mix);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        m_mix -= 0.05;
+        m_shader->setValue("ourMix", m_mix);
+    }
 }

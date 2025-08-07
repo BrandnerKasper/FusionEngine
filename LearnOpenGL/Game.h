@@ -8,11 +8,11 @@
 class Game {
 public:
     Game();
-    void run() const;
+    void run();
     virtual ~Game();
 
 private:
-    void processInput() const;
+    void processInput();
 
 private:
     GLFWwindow* m_window;
@@ -26,4 +26,5 @@ private:
     std::string_view m_texture_path1 {"textures/container.jpg"};
     std::string_view m_texture_path2 {"textures/awesomeface.png"};
     unsigned int texture1, texture2;
+    float m_mix {0.2f};
 };

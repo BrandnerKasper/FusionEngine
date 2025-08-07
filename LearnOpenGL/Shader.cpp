@@ -84,6 +84,7 @@ void Shader::create() {
     use();
     setValue("texture1", 0);
     setValue("texture2", 1);
+    setValue("ourMix", 0.2f);
 }
 
 void Shader::reload() {
