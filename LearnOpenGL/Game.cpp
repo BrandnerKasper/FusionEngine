@@ -141,18 +141,26 @@ void Game::run() {
         // input
         processInput();
 
-        // GLM stuff
-        glm::mat4 trans {glm::mat4{1.0f}};
-        trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3{0.0f, 0.0f, 1.0f});
-        trans = glm::translate(trans, glm::vec3{0.5f, -0.5f, 0.0f});
-        trans = glm::scale(trans, glm::vec3{0.5f, 0.5f, 0.5f});
-        m_shader->setValue("transform", trans);
-
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // GLM stuff
+        glm::mat4 trans {glm::mat4{1.0f}};
+        trans = glm::translate(trans, glm::vec3{0.5f, -0.5f, 0.0f});
+        trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3{0.0f, 0.0f, 1.0f});
+        // trans = glm::scale(trans, glm::vec3{0.5f, 0.5f, 0.5f});
+        m_shader->setValue("transform", trans);
+
         // draw our first triangle
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        // GLM stuff 2
+        trans = glm::mat4{1.0f};
+        trans = glm::translate(trans, glm::vec3{-0.5f, 0.5f, 0.0f});
+        auto scale {static_cast<float>(glm::sin(glfwGetTime()))};
+        trans = glm::scale(trans, glm::vec3{scale, scale, scale});
+        m_shader->setValue("transform", trans);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         // swap and check
