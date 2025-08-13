@@ -1,4 +1,7 @@
 #include <print>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -138,6 +141,13 @@ void Game::run() {
         // input
         processInput();
 
+        // GLM stuff
+        glm::mat4 trans {glm::mat4{1.0f}};
+        trans = glm::translate(trans, glm::vec3{0.5f, -0.5f, 0.0f});
+        trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3{0.0f, 0.0f, 1.0f});
+        trans = glm::scale(trans, glm::vec3{0.5f, 0.5f, 0.5f});
+        m_shader->setValue("transform", trans);
+
         // rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -168,11 +178,11 @@ void Game::processInput() {
         m_shader->checkReload();
 
     if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS) {
-        m_mix += 0.05;
+        m_mix += 0.005;
         m_shader->setValue("ourMix", m_mix);
     }
     if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        m_mix -= 0.05;
+        m_mix -= 0.005;
         m_shader->setValue("ourMix", m_mix);
     }
 }

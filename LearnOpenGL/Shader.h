@@ -2,6 +2,9 @@
 
 #include <string>
 #include <filesystem>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 namespace fs = std::filesystem;
 
@@ -36,6 +39,8 @@ void Shader::setValue(const std::string& name, const T val) const {
         glUniform1i(loc, static_cast<int>(val));
     } else if constexpr (std::is_same_v<T, float>) {
         glUniform1f(loc, val);
+    } else if constexpr (std::is_same_v<T, glm::mat4>) {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(val));
     } else {
         static_assert(sizeof(T) == 0, "Unsupported uniform type for setVal");
     }
