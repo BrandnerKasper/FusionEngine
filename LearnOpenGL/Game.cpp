@@ -65,7 +65,8 @@ void createTexture(unsigned int& texture, const std::string_view path, const boo
     stbi_image_free(data);
 }
 
-Game::Game() {
+Game::Game(const int width, const int height)
+    : m_width{width}, m_height{height} {
     glfwInit();
 
     // Define OpenGL version (4.6)
@@ -75,7 +76,7 @@ Game::Game() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create our first window
-    m_window = glfwCreateWindow(800, 600, "LearnOP", nullptr, nullptr);
+    m_window = glfwCreateWindow(m_width, m_height, "LearnOP", nullptr, nullptr);
     if(m_window == nullptr) {
         std::println("Failed to create GLFW window!");
         return;
@@ -133,6 +134,17 @@ Game::Game() {
     glBindTexture(GL_TEXTURE_2D, texture1);
     glActiveTexture(GL_TEXTURE0+1);
     glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // Model view projection
+    auto model {glm::mat4{1.0f}};
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3{1.0f, 0.0f, 0.0f});
+    auto view {glm::mat4{1.0f}};
+    view = glm::translate(view, glm::vec3{0.0f, 0.0f, -3.0f});
+    auto projection {glm::mat4{1.0f}};
+    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(m_width)/static_cast<float>(m_height), 0.1f, 100.0f);
+    m_shader->setValue("model", model);
+    m_shader->setValue("view", view);
+    m_shader->setValue("projection", projection);
 }
 
 void Game::run() {
@@ -145,22 +157,7 @@ void Game::run() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // GLM stuff
-        glm::mat4 trans {glm::mat4{1.0f}};
-        trans = glm::translate(trans, glm::vec3{0.5f, -0.5f, 0.0f});
-        trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3{0.0f, 0.0f, 1.0f});
-        // trans = glm::scale(trans, glm::vec3{0.5f, 0.5f, 0.5f});
-        m_shader->setValue("transform", trans);
-
         // draw our first triangle
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-        // GLM stuff 2
-        trans = glm::mat4{1.0f};
-        trans = glm::translate(trans, glm::vec3{-0.5f, 0.5f, 0.0f});
-        auto scale {static_cast<float>(glm::sin(glfwGetTime()))};
-        trans = glm::scale(trans, glm::vec3{scale, scale, scale});
-        m_shader->setValue("transform", trans);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         // swap and check

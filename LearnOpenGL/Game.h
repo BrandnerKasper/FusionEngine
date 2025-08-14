@@ -7,7 +7,7 @@
 
 class Game {
 public:
-    Game();
+    Game(int width = 800, int height = 600);
     void run();
     virtual ~Game();
 
@@ -16,6 +16,7 @@ private:
 
 private:
     GLFWwindow* m_window;
+    int m_width, m_height;
 
     std::string_view m_vertex_shader_path {"shaders/vertex.vert"};
     std::string_view m_fragment_shader_path {"shaders/fragment.frag"};
