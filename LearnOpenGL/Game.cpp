@@ -187,8 +187,12 @@ void Game::run() {
         for (size_t i {0}; i < 10; ++i) {
             auto model {glm::mat4{1.0f}};
             model = glm::translate(model, m_cubePositions[i]);
-            model = glm::rotate(model, glm::radians(20.0f * static_cast<float>(i)), glm::vec3(1.0f, 0.3f, 0.5f));
-
+            float angle {};
+            if ((i+3)%3 == 0)
+                angle = static_cast<float>(glfwGetTime());
+            else
+                angle = glm::radians(20.0f * static_cast<float>(i));
+            model = glm::rotate(model, angle, glm::vec3{1.0f, 0.3f, 0.5f});
             m_shader->setValue("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
