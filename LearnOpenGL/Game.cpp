@@ -196,8 +196,13 @@ void Game::run() {
             m_shader->setValue("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        auto view {glm::mat4{1.0f}};
-        view = glm::translate(view, glm::vec3{0.0f, 0.0f, -3.0f});
+
+        // moving camera
+        const auto radius {10.0f};
+        auto camX {std::sin(glfwGetTime()) * radius};
+        auto camZ {std::cos(glfwGetTime()) * radius};
+        glm::mat4 view;
+        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
         m_shader->setValue("view", view);
         glm::mat4 projection {glm::perspective(glm::radians(45.0f), static_cast<float>(m_width)/static_cast<float>(m_height), 0.1f, 100.0f)};
         m_shader->setValue("projection", projection);
