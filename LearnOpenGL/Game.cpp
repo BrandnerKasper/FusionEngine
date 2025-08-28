@@ -171,6 +171,11 @@ Game::Game(const int width, const int height)
 
     // Depth testing
     glEnable(GL_DEPTH_TEST);
+
+    // Capture Mouse
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // Callback to use mouse to rotate camera
+    glfwSetCursorPosCallback(m_window, mouse_callback);
 }
 
 void Game::run() {
@@ -256,3 +261,35 @@ void Game::processInput() {
         m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
 
 }
+
+void Game::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    if (m_firstMouse) {
+        m_lastX = xpos;
+        m_lastY = ypos;
+        m_firstMouse = false;
+    }
+
+    float xOffset = xpos - m_lastX;
+    float yOffset = m_lastY - ypos;
+    m_lastX = xpos;
+    m_lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+
+    m_yaw += xOffset;
+    m_pitch += yOffset;
+
+    if (m_pitch > 89.0f)
+        m_pitch = 89.0f;
+    if (m_pitch < -89.0f)
+        m_pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
+    direction.y = std::sin(glm::radians(m_pitch));
+    direction.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
+    m_cameraFront = glm::normalize(direction);
+}
+
