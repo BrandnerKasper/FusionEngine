@@ -176,6 +176,11 @@ Game::Game(const int width, const int height)
 void Game::run() {
     // render loop
     while(!glfwWindowShouldClose(m_window)) {
+        // Delta Time
+        const auto currentTime {glfwGetTime()};
+        m_deltaTime = currentTime - m_last_frame;
+        m_last_frame = currentTime;
+
         // input
         processInput();
 
@@ -197,12 +202,9 @@ void Game::run() {
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // moving camera
-        const auto radius {10.0f};
-        auto camX {std::sin(glfwGetTime()) * radius};
-        auto camZ {std::cos(glfwGetTime()) * radius};
+        // camera
         glm::mat4 view;
-        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
         m_shader->setValue("view", view);
         glm::mat4 projection {glm::perspective(glm::radians(45.0f), static_cast<float>(m_width)/static_cast<float>(m_height), 0.1f, 100.0f)};
         m_shader->setValue("projection", projection);
@@ -232,6 +234,7 @@ void Game::processInput() {
     if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
         m_shader->checkReload();
 
+    // Bind some keys to change texture overlap
     if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS) {
         m_mix += 0.005;
         m_shader->setValue("ourMix", m_mix);
@@ -240,4 +243,16 @@ void Game::processInput() {
         m_mix -= 0.005;
         m_shader->setValue("ourMix", m_mix);
     }
+
+    // Move camera
+    const float cameraSpeed = 5.5f * m_deltaTime;
+    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+        m_cameraPos += cameraSpeed * m_cameraFront;
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+        m_cameraPos -= cameraSpeed * m_cameraFront;
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+        m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+        m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+
 }

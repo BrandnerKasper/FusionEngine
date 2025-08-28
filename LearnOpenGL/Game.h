@@ -29,6 +29,15 @@ private:
     unsigned int texture1, texture2;
     float m_mix {0.2f};
 
+    // Camera stuff
+    glm::vec3 m_cameraPos {glm::vec3(0.0f, 0.0f, 3.0f)};
+    glm::vec3 m_cameraFront {glm::vec3(0.0f, 0.0f, -1.0f)};;
+    glm::vec3 m_cameraUp {glm::vec3(0.0f, 1.0f, 0.0f)};;
+
+    // Delta Time
+    double m_deltaTime {0.0f};
+    double m_last_frame {0.0f};
+
     // More Cubes
     std::array<glm::vec3, 10> m_cubePositions{
         glm::vec3( 0.0f, 0.0f, 0.0f),
