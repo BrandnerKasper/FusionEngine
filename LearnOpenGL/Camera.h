@@ -28,6 +28,7 @@ public:
     void move(Move dir, double delta);
 
     [[nodiscard]] glm::mat4 getView() const {return glm::lookAt(m_pos, m_pos + m_front, m_up);}
+    glm::mat4 getView2();
     [[nodiscard]] glm::mat4 getProjection(const float aspect) const {return glm::perspective(glm::radians(static_cast<float>(m_fov)), aspect, 0.1f, 100.0f);}
 
 
