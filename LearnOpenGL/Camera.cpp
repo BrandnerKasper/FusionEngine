@@ -2,7 +2,10 @@
 #include "Camera.h"
 
 
-void Camera::mouse_callback(GLFWwindow *window, const double xpos, const double ypos) {
+Camera::Camera(const glm::vec3 start_pos)
+    : m_pos{start_pos}{}
+
+void Camera::processMouseMovement(const double xpos, const double ypos) {
     if (m_firstMouse) {
         m_lastX = xpos;
         m_lastY = ypos;
@@ -29,10 +32,10 @@ void Camera::mouse_callback(GLFWwindow *window, const double xpos, const double 
     direction.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
     direction.y = std::sin(glm::radians(m_pitch));
     direction.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
-    m_cameraFront = glm::normalize(direction);
+    m_front = glm::normalize(direction);
 }
 
-void Camera::scroll_callback(GLFWwindow *window, double xOffset, double yOffset) {
+void Camera::processMouseWheel(double xOffset, double yOffset) {
     m_fov -= yOffset;
     if (m_fov < MIN_FOV)
         m_fov = MIN_FOV;
@@ -44,16 +47,16 @@ void Camera::move(const Move dir, const double delta) {
     const float cameraSpeed = SPEED * delta;
     switch (dir) {
         case Up:
-            m_cameraPos += cameraSpeed * m_cameraFront;
+            m_pos += cameraSpeed * m_front;
             break;
         case Down:
-            m_cameraPos -= cameraSpeed * m_cameraFront;
+            m_pos -= cameraSpeed * m_front;
             break;
         case Left:
-            m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+            m_pos -= glm::normalize(glm::cross(m_front, m_up)) * cameraSpeed;
             break;
         case Right:
-            m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+            m_pos += glm::normalize(glm::cross(m_front, m_up)) * cameraSpeed;
             break;
         default:
             std::println("Camera movement option {} is not valid!", static_cast<int>(dir));

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GLFW/glfw3.h>
+
 
 #define SENSITIVITY 0.1f
 #define SPEED 5.5f
@@ -21,22 +21,24 @@ public:
         MaxMoveOptions,
     };
 
-    static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
-    static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
-    static void move(Move dir, double delta);
+    explicit Camera(glm::vec3 start_pos = glm::vec3(0.0f, 0.0f, 3.0f));
 
-    static glm::mat4 getView() {return glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);}
-    static glm::mat4 getProjection(const float aspect) {return glm::perspective(glm::radians(static_cast<float>(m_fov)), aspect, 0.1f, 100.0f);}
+    void processMouseMovement(double xpos, double ypos);
+    void processMouseWheel(double xOffset, double yOffset);
+    void move(Move dir, double delta);
+
+    [[nodiscard]] glm::mat4 getView() const {return glm::lookAt(m_pos, m_pos + m_front, m_up);}
+    [[nodiscard]] glm::mat4 getProjection(const float aspect) const {return glm::perspective(glm::radians(static_cast<float>(m_fov)), aspect, 0.1f, 100.0f);}
 
 
 private:
-    static inline glm::vec3 m_cameraPos {glm::vec3(0.0f, 0.0f, 3.0f)};
-    static inline glm::vec3 m_cameraFront {glm::vec3(0.0f, 0.0f, -1.0f)};;
-    static inline glm::vec3 m_cameraUp {glm::vec3(0.0f, 1.0f, 0.0f)};;
+    glm::vec3 m_pos {};
+    glm::vec3 m_front {glm::vec3(0.0f, 0.0f, -1.0f)};;
+    glm::vec3 m_up {glm::vec3(0.0f, 1.0f, 0.0f)};;
     // rotate
-    static inline bool m_firstMouse {true};
-    static inline float m_lastX = 400, m_lastY = 300;
-    static inline float m_yaw = -90.0f, m_pitch = 0.0f;
+    bool m_firstMouse {true};
+    float m_lastX = 400, m_lastY = 300;
+    float m_yaw = -90.0f, m_pitch = 0.0f;
     // zoom
-    static inline double m_fov {45.0f};
+    double m_fov {45.0f};
 };

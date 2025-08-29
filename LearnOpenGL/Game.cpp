@@ -74,6 +74,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
+    Game::m_camera->processMouseMovement(xpos, ypos);
+}
+
+void mouse_wheel_callback(GLFWwindow* window, double xOffset, double yOffset) {
+    Game::m_camera->processMouseWheel(xOffset, yOffset);
+}
+
 void createTexture(unsigned int& texture, const std::string_view path, const bool transparent = false) {
     // Texture stuff
     glGenTextures(1, &texture);
@@ -174,9 +182,9 @@ Game::Game(const int width, const int height)
     // Capture Mouse
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // Callback to use mouse to rotate camera
-    glfwSetCursorPosCallback(m_window, Camera::mouse_callback);
+    glfwSetCursorPosCallback(m_window, mouse_cursor_callback);
     // Callback to zoom via mouse wheel
-    glfwSetScrollCallback(m_window, Camera::scroll_callback);
+    glfwSetScrollCallback(m_window, mouse_wheel_callback);
 }
 
 void Game::run() {
@@ -209,9 +217,9 @@ void Game::run() {
         }
 
         // camera
-        const glm::mat4 view {Camera::getView()};
+        const glm::mat4 view {m_camera->getView()};
         m_shader->setValue("view", view);
-        const glm::mat4 projection {Camera::getProjection(static_cast<float>(m_width)/static_cast<float>(m_height))};
+        const glm::mat4 projection {m_camera->getProjection(static_cast<float>(m_width)/static_cast<float>(m_height))};
         m_shader->setValue("projection", projection);
 
         // draw our first triangle
@@ -251,13 +259,13 @@ void Game::processInput() {
 
     // Move camera
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        Camera::move(Camera::Up, m_deltaTime);
+        m_camera->move(Camera::Up, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        Camera::move(Camera::Down, m_deltaTime);
+        m_camera->move(Camera::Down, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        Camera::move(Camera::Left, m_deltaTime);
+        m_camera->move(Camera::Left, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        Camera::move(Camera::Right, m_deltaTime);
+        m_camera->move(Camera::Right, m_deltaTime);
 
 }
 
