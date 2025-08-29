@@ -14,14 +14,14 @@
 class Camera {
 public:
     enum Move {
-        Up,
-        Down,
+        Forward,
+        Backward,
         Left,
         Right,
         MaxMoveOptions,
     };
 
-    explicit Camera(glm::vec3 start_pos = glm::vec3(0.0f, 0.0f, 3.0f));
+    explicit Camera(glm::vec3 start_pos = glm::vec3(0.0f, 0.0f, 3.0f), bool is_flying = true);
 
     void processMouseMovement(double xpos, double ypos);
     void processMouseWheel(double xOffset, double yOffset);
@@ -32,7 +32,9 @@ public:
 
 
 private:
+    // flying or walking camer
     glm::vec3 m_pos {};
+    bool m_isFlying {};
     glm::vec3 m_front {glm::vec3(0.0f, 0.0f, -1.0f)};;
     glm::vec3 m_up {glm::vec3(0.0f, 1.0f, 0.0f)};;
     // rotate

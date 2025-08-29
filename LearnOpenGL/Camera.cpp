@@ -2,8 +2,8 @@
 #include "Camera.h"
 
 
-Camera::Camera(const glm::vec3 start_pos)
-    : m_pos{start_pos}{}
+Camera::Camera(const glm::vec3 start_pos, const bool is_flying)
+    : m_pos{start_pos}, m_isFlying(is_flying){}
 
 void Camera::processMouseMovement(const double xpos, const double ypos) {
     if (m_firstMouse) {
@@ -46,11 +46,17 @@ void Camera::processMouseWheel(double xOffset, double yOffset) {
 void Camera::move(const Move dir, const double delta) {
     const float cameraSpeed = SPEED * delta;
     switch (dir) {
-        case Up:
-            m_pos += cameraSpeed * m_front;
+        case Forward:
+            if (m_isFlying)
+                m_pos += cameraSpeed * m_front;
+            else
+                m_pos += cameraSpeed * glm::vec3(m_front.x, 0, m_front.z);
             break;
-        case Down:
-            m_pos -= cameraSpeed * m_front;
+        case Backward:
+            if (m_isFlying)
+                m_pos -= cameraSpeed * m_front;
+            else
+                m_pos -= cameraSpeed * glm::vec3(m_front.x, 0, m_front.z);
             break;
         case Left:
             m_pos -= glm::normalize(glm::cross(m_front, m_up)) * cameraSpeed;

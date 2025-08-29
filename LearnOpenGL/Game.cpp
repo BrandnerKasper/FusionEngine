@@ -259,9 +259,9 @@ void Game::processInput() {
 
     // Move camera
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        m_camera->move(Camera::Up, m_deltaTime);
+        m_camera->move(Camera::Forward, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        m_camera->move(Camera::Down, m_deltaTime);
+        m_camera->move(Camera::Backward, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
         m_camera->move(Camera::Left, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)

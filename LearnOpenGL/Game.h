@@ -12,7 +12,7 @@ public:
     void run();
     virtual ~Game();
     // TODO: Can we do it differently here?
-    static inline std::unique_ptr<Camera> m_camera {std::make_unique<Camera>()};
+    static inline std::unique_ptr<Camera> m_camera {std::make_unique<Camera>(glm::vec3(0, 0, 3), false)};
 
 private:
     void processInput();
