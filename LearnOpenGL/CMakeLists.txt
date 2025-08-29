@@ -11,7 +11,9 @@ set(SOURCE_FILES main.cpp
         Shader.cpp
         Assets.h
         Game.cpp
-        Game.h)
+        Game.h
+        Camera.cpp
+        Camera.h)
 
 # set executable name
 set(EXE_FILE OpenGLRenderer)

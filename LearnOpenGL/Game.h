@@ -13,7 +13,8 @@ public:
 
 private:
     void processInput();
-    static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+    // static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+    // static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 
 private:
     GLFWwindow* m_window;
@@ -31,18 +32,21 @@ private:
     float m_mix {0.2f};
 
     // Camera stuff TODO move into own camera class!
-    static inline glm::vec3 m_cameraPos {glm::vec3(0.0f, 0.0f, 3.0f)};
-    static inline glm::vec3 m_cameraFront {glm::vec3(0.0f, 0.0f, -1.0f)};;
-    static inline glm::vec3 m_cameraUp {glm::vec3(0.0f, 1.0f, 0.0f)};;
-
-    // rotate camera based on mouse
-    static inline bool m_firstMouse {true};
-    static inline float m_lastX = 400, m_lastY = 300;
-    static inline float m_yaw = -90.0f, m_pitch = 0.0f;
+    // static inline glm::vec3 m_cameraPos {glm::vec3(0.0f, 0.0f, 3.0f)};
+    // static inline glm::vec3 m_cameraFront {glm::vec3(0.0f, 0.0f, -1.0f)};;
+    // static inline glm::vec3 m_cameraUp {glm::vec3(0.0f, 1.0f, 0.0f)};;
+    //
+    // // rotate camera based on mouse
+    // static inline bool m_firstMouse {true};
+    // static inline float m_lastX = 400, m_lastY = 300;
+    // static inline float m_yaw = -90.0f, m_pitch = 0.0f;
 
     // Delta Time
     double m_deltaTime {0.0f};
     double m_last_frame {0.0f};
+
+    // Camera Zoom
+    // static inline double m_fov {45.0f};
 
     // More Cubes
     std::array<glm::vec3, 10> m_cubePositions{

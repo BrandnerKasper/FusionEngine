@@ -3,13 +3,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <array>
+#include <X11/Xlib.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Game.h"
-
-#include <X11/Xlib.h>
-
+#include "Camera.h"
 #include "Assets.h"
 
 // Draw a rectangle
@@ -175,7 +174,9 @@ Game::Game(const int width, const int height)
     // Capture Mouse
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // Callback to use mouse to rotate camera
-    glfwSetCursorPosCallback(m_window, mouse_callback);
+    glfwSetCursorPosCallback(m_window, Camera::mouse_callback);
+    // Callback to zoom via mouse wheel
+    glfwSetScrollCallback(m_window, Camera::scroll_callback);
 }
 
 void Game::run() {
@@ -208,10 +209,9 @@ void Game::run() {
         }
 
         // camera
-        glm::mat4 view;
-        view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
+        const glm::mat4 view {Camera::getView()};
         m_shader->setValue("view", view);
-        glm::mat4 projection {glm::perspective(glm::radians(45.0f), static_cast<float>(m_width)/static_cast<float>(m_height), 0.1f, 100.0f)};
+        const glm::mat4 projection {Camera::getProjection(static_cast<float>(m_width)/static_cast<float>(m_height))};
         m_shader->setValue("projection", projection);
 
         // draw our first triangle
@@ -250,46 +250,14 @@ void Game::processInput() {
     }
 
     // Move camera
-    const float cameraSpeed = 5.5f * m_deltaTime;
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        m_cameraPos += cameraSpeed * m_cameraFront;
+        Camera::move(Camera::Up, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        m_cameraPos -= cameraSpeed * m_cameraFront;
+        Camera::move(Camera::Down, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+        Camera::move(Camera::Left, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+        Camera::move(Camera::Right, m_deltaTime);
 
-}
-
-void Game::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    if (m_firstMouse) {
-        m_lastX = xpos;
-        m_lastY = ypos;
-        m_firstMouse = false;
-    }
-
-    float xOffset = xpos - m_lastX;
-    float yOffset = m_lastY - ypos;
-    m_lastX = xpos;
-    m_lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
-
-    m_yaw += xOffset;
-    m_pitch += yOffset;
-
-    if (m_pitch > 89.0f)
-        m_pitch = 89.0f;
-    if (m_pitch < -89.0f)
-        m_pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
-    direction.y = std::sin(glm::radians(m_pitch));
-    direction.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
-    m_cameraFront = glm::normalize(direction);
 }
 
