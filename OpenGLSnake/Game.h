@@ -1,22 +1,28 @@
 #pragma once
-#include <GLFW/glfw3.h>
+#include <string>
+
+#include "Renderer.h"
+#include "Input.h"
 
 
 class Game {
 public:
-    explicit Game(int width = 800, int height = 600);
-    ~Game();
+    Game();
+    ~Game() = default;
 
     void run();
 
 private:
-    bool update();
-    void render();
     void processInput();
-
-    void initWindow();
+    void update();
+    void render();
 
 private:
-    GLFWwindow* m_window;
+    // actual Game
+    bool m_running {true};
+
+    // Rendering
+    Renderer m_renderer;
+    Input m_input;
     int m_width, m_height;
 };

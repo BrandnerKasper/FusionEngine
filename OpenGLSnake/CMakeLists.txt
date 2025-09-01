@@ -8,8 +8,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXE_FILE Fusion)
 
 set(SOURCE_FILES main.cpp
-                 Game.h
-                 Game.cpp
+        Game.h
+        Game.cpp
+        Renderer.cpp
+        Renderer.h
+        Input.cpp
+        Input.h
+        settings.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
