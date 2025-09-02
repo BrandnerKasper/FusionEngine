@@ -15,6 +15,8 @@ set(SOURCE_FILES main.cpp
         Input.cpp
         Input.h
         settings.h
+        Application.cpp
+        Application.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
