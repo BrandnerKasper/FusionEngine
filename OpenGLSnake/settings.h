@@ -4,8 +4,8 @@
 
 namespace Settings {
     namespace Window {
-        constexpr int width{1600};
-        constexpr int height{600};
-        constexpr std::string title{"Fuck me"};
+        constexpr int width{1280};
+        constexpr int height{720};
+        constexpr std::string title{"SNAKE"};
     };
 }

@@ -10,13 +10,18 @@ set(EXE_FILE Fusion)
 set(SOURCE_FILES main.cpp
         Game.h
         Game.cpp
-        Renderer.cpp
-        Renderer.h
+        Renderer/Renderer.cpp
+        Renderer/Renderer.h
         Input.cpp
         Input.h
         settings.h
         Application.cpp
         Application.h
+        Renderer/Shader.cpp
+        Renderer/Shader.h
+        assets.h
+        Renderer/Mesh.cpp
+        Renderer/Mesh.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
@@ -44,3 +49,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm)
+
+# define asset root
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(ASSET_ROOT ./assets/)
+else ()
+    set(ASSET_ROOT ${CMAKE_SOURCE_DIR}/assets/)
+endif ()
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${ASSET_ROOT}")

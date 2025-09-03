@@ -6,7 +6,7 @@
 #include "settings.h"
 
 #include "Input.h"
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 #include "Game.h"
 
 class Application {

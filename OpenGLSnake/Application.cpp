@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include "Application.h"
 
-#include <print>
 
 Application::Application() {
     init();
@@ -29,17 +30,13 @@ void Application::init() {
 
     // Create our first window
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-    if(m_window == nullptr) {
-        std::println("Failed to create GLFW window!");
-        return;
-    }
+    if(m_window == nullptr)
+        throw std::runtime_error("Failed to create GLFW window!");
 
     glfwMakeContextCurrent(m_window);
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
-    if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        std::println("Failed to initialize GLAD");
-        return;
-    }
+    if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+        throw std::runtime_error("Failed to initialize GLAD");
 }
 
 void Application::run() {
