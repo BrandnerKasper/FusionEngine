@@ -55,10 +55,26 @@ void Application::run() {
 void Application::processInput() {
     if (Input::pressed(Input::Quit))
         glfwSetWindowShouldClose(m_window, true);
+    if (Input::pressed(Input::Pause))
+        m_current_action = Input::Pause;
+    // TODO EVENT SYSTEM to subscribe onto Input event
+    if (Input::pressed(Input::Up))
+        m_current_action = Input::Up;
+
+    if (Input::pressed(Input::Down))
+        m_current_action = Input::Down;
+
+    if (Input::pressed(Input::Left))
+        m_current_action = Input::Left;
+
+    if (Input::pressed(Input::Right))
+        m_current_action = Input::Right;
 }
 
 void Application::update() {
-    m_game.update(m_deltaTime);
+    if (m_current_action == Input::Pause)
+        return;
+    m_game.update(m_deltaTime, m_current_action);
 }
 
 void Application::render() {

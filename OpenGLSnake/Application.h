@@ -7,7 +7,7 @@
 
 #include "Input.h"
 #include "Renderer/Renderer.h"
-#include "Game.h"
+#include "Game/Game.h"
 
 class Application {
 public:
@@ -32,6 +32,7 @@ private:
     double m_deltaTime {}, m_last_frame {};
 
     Input m_input;
+    Input::Action m_current_action{};
     Renderer m_renderer;
     Game m_game;
 };

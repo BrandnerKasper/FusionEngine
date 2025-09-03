@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXE_FILE Fusion)
 
 set(SOURCE_FILES main.cpp
-        Game.h
-        Game.cpp
+        Game/Game.h
+        Game/Game.cpp
         Renderer/Renderer.cpp
         Renderer/Renderer.h
         Input.cpp
@@ -22,6 +22,10 @@ set(SOURCE_FILES main.cpp
         assets.h
         Renderer/Mesh.cpp
         Renderer/Mesh.h
+        random.h
+        Game/Player.cpp
+        Game/Player.h
+        Game/Tile.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
