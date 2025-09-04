@@ -11,8 +11,13 @@ namespace Settings {
     };
 
     namespace Game {
+        constexpr double tick = 1.2;
         constexpr int board_size {10};
-        constexpr std::pair start_position {6, 2};
+        constexpr std::pair start_position {4, 4};
         constexpr int body_length {3};
+    }
+
+    namespace Render {
+        constexpr double frame_time = 0.2;
     }
 }

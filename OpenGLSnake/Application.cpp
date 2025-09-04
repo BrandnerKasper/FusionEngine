@@ -74,9 +74,29 @@ void Application::processInput() {
 void Application::update() {
     if (m_current_action == Input::Pause)
         return;
-    m_game.update(m_deltaTime, m_current_action);
+    m_game.run(m_deltaTime, m_current_action);
 }
 
 void Application::render() {
+    // Terminal render
+    m_last_render += m_deltaTime;
+    if (m_last_render >= Settings::Render::frame_time) {
+        terminal_render();
+        m_last_render -= Settings::Render::frame_time;
+    }
+    // OpenGL render
     m_renderer.draw();
+}
+
+
+void Application::terminal_render() {
+    std::string terminal {};
+    for (const auto c: m_game.getBoardState()) {
+        if (c == '\n')
+            terminal += c;
+        else {
+            terminal += ascii[c];
+        }
+    }
+    std::cout << terminal << std::endl;
 }

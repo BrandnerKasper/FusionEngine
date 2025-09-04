@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <unordered_map>
 
 #include "settings.h"
 
@@ -21,6 +22,7 @@ private:
     void processInput();
     void update();
     void render();
+    void terminal_render();
 
 private:
     GLFWwindow* m_window;
@@ -32,7 +34,17 @@ private:
     double m_deltaTime {}, m_last_frame {};
 
     Input m_input;
-    Input::Action m_current_action{};
+    Input::Action m_current_action{Input::Up};
     Renderer m_renderer;
     Game m_game;
+
+    double m_last_render {};
+
+    // terminal render
+    std::unordered_map<char, std::string> ascii {
+        {'0', " "},
+        {'1', "#"},
+        {'2', "■"},
+        {'3', "▫"}
+    };
 };

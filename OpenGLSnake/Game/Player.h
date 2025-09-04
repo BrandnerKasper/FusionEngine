@@ -3,18 +3,19 @@
 #include <optional>
 
 #include "Tile.h"
-#include "Game.h"
+#include "../Input.h"
 
 
 class Player {
 public:
     Player();
 
-    void move(Game::Action action);
+    void move(Input::Action action);
     void eat();
 
     std::vector<Tile> body {};
-    std::optional<Position> tail {std::nullopt};
+    Position head_pos{};
+    std::optional<Position> tail_pos {std::nullopt};
 private:
     void init();
 };
