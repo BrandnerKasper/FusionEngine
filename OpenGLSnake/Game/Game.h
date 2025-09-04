@@ -31,7 +31,7 @@ struct Board {
         for (auto tile: data) {
             str += std::to_string(tile.type);
             ++counter;
-            if (counter % 10 == 0)
+            if (counter % Settings::Game::board_size == 0)
                 str += "\n";
         }
         return str;

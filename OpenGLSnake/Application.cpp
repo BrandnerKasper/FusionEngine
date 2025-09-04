@@ -6,12 +6,11 @@
 Application::Application() {
     init();
     Input::m_window = m_window;
-    Renderer::m_window = m_window;
+    m_renderer = std::make_unique<Renderer>(m_window);
 }
 
 Application::~Application() {
     Input::m_window = nullptr;
-    Renderer::m_window = nullptr;
 }
 
 // OpenGL call backs
@@ -37,6 +36,8 @@ void Application::init() {
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
     if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
         throw std::runtime_error("Failed to initialize GLAD");
+    // Depth testing
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Application::run() {
@@ -75,23 +76,23 @@ void Application::update() {
     if (m_current_action == Input::Pause)
         return;
     m_game.run(m_deltaTime, m_current_action);
+    board_state = m_game.getBoardState();
 }
 
 void Application::render() {
     // Terminal render
     m_last_render += m_deltaTime;
     if (m_last_render >= Settings::Render::frame_time) {
-        terminal_render();
+        terminalRender(board_state);
         m_last_render -= Settings::Render::frame_time;
     }
-    // OpenGL render
-    m_renderer.draw();
+    openGLRender(board_state);
 }
 
 
-void Application::terminal_render() {
+void Application::terminalRender(const std::string_view board) {
     std::string terminal {};
-    for (const auto c: m_game.getBoardState()) {
+    for (const auto c: board) {
         if (c == '\n')
             terminal += c;
         else {
@@ -99,4 +100,9 @@ void Application::terminal_render() {
         }
     }
     std::cout << terminal << std::endl;
+}
+
+void Application::openGLRender(std::string_view board) {
+    // OpenGL render
+    m_renderer->draw(board);
 }

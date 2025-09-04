@@ -1,0 +1,20 @@
+#pragma once
+#include "Mesh.h"
+#include "Shader.h"
+
+
+class Sprite {
+public:
+    Sprite(const Shader& shader, glm::vec2 position, glm::vec3 color);
+
+    void draw() const;
+    void setColor(const glm::vec3 color) {m_color = color;}
+
+private:
+    Mesh m_mesh {};
+    Shader m_shader;
+
+    glm::vec2 m_position;
+    glm::vec3 m_color;
+    float m_size = 64.0f;
+};

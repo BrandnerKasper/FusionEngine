@@ -5,15 +5,15 @@
 
 namespace Settings {
     namespace Window {
-        constexpr int width{1280};
-        constexpr int height{720};
+        constexpr float width{512.0f};
+        constexpr float height{512.0f};
         constexpr std::string title{"SNAKE"};
     };
 
     namespace Game {
         constexpr double tick = 1.2;
-        constexpr int board_size {10};
-        constexpr std::pair start_position {4, 4};
+        constexpr int board_size {8};
+        constexpr std::pair start_position {3, 3};
         constexpr int body_length {3};
     }
 

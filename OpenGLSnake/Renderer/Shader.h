@@ -32,6 +32,8 @@ void Shader::setValue(const std::string& name, const T val) const {
         glUniform1i(loc, static_cast<int>(val));
     } else if constexpr (std::is_same_v<T, float>) {
         glUniform1f(loc, val);
+    } else if constexpr (std::is_same_v<T, glm::vec3>) {
+        glUniform3fv(loc, 1, glm::value_ptr(val));
     } else if constexpr (std::is_same_v<T, glm::mat4>) {
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(val));
     } else {

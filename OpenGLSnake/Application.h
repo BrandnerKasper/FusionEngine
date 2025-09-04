@@ -3,9 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <unordered_map>
+#include <string>
+#include <string_view>
 
 #include "settings.h"
-
 #include "Input.h"
 #include "Renderer/Renderer.h"
 #include "Game/Game.h"
@@ -22,12 +23,13 @@ private:
     void processInput();
     void update();
     void render();
-    void terminal_render();
+    void terminalRender(std::string_view board);
+    void openGLRender(std::string_view board);
 
 private:
     GLFWwindow* m_window;
-    int m_width {Settings::Window::width};
-    int m_height {Settings::Window::height};
+    float m_width {Settings::Window::width};
+    float m_height {Settings::Window::height};
     std::string m_title{Settings::Window::title};
 
     // Delta time
@@ -35,8 +37,9 @@ private:
 
     Input m_input;
     Input::Action m_current_action{Input::Up};
-    Renderer m_renderer;
+    std::unique_ptr<Renderer> m_renderer;
     Game m_game;
+    std::string board_state {};
 
     double m_last_render {};
 
