@@ -12,4 +12,5 @@ libtorch/
 *.pt
 # OpenGL context
 extern/
+/LearnOpenGL/assets/textures
 
