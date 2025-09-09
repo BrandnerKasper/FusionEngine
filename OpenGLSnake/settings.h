@@ -18,6 +18,7 @@ namespace Settings {
     }
 
     namespace Render {
-        constexpr double frame_time = 0.2;
+        constexpr double frame_time = 1.0f/60.0f;
+        constexpr int tile_size {1};
     }
 }

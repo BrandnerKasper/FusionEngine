@@ -9,8 +9,9 @@
 Renderer::Renderer(GLFWwindow* window)
     : m_window{window}{
     m_shader.use();
-    glm::mat4 projection = glm::ortho(0.0f, Settings::Window::width,
-        Settings::Window::height, 0.0f, -1.0f, 1.0f);
+    const auto size = static_cast<float>(Settings::Game::board_size);
+    const glm::mat4 projection = glm::ortho(0.0f, size,
+        size, 0.0f, -1.0f, 1.0f);
     m_shader.setValue("projection", projection);
     initSprites();
 }

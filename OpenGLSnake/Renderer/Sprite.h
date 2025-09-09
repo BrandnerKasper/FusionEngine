@@ -3,6 +3,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "../settings.h"
 
 
 class Sprite {
@@ -18,5 +19,5 @@ private:
 
     glm::vec2 m_position;
     glm::vec3 m_color;
-    float m_size = 16.0f;
+    float m_size {Settings::Render::tile_size};
 };
