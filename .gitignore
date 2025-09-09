@@ -10,3 +10,7 @@ data/
 libtorch/
 # trained models
 *.pt
+# OpenGL context
+extern/
+/LearnOpenGL/assets/textures
+
