@@ -1,7 +1,24 @@
+#include <sstream>
+#include <iomanip>
+
 #include "Sprite.h"
 
-Sprite::Sprite(const Shader& shader, const glm::vec2 position, const glm::vec3 color)
-    : m_shader(shader), m_position{position}, m_color{color}{}
+glm::vec3 hexToRGBVec(std::string_view hex_color) {
+    unsigned int rgb = 0;
+    std::stringstream ss;
+    ss << std::hex << hex_color;
+    ss >> rgb;
+
+    float r = ((rgb >> 16) & 0xFF) / 255.0f;
+    float g = ((rgb >> 8)  & 0xFF) / 255.0f;
+    float b = ((rgb)       & 0xFF) / 255.0f;
+
+    return {r, g, b};
+}
+
+
+Sprite::Sprite(const Shader& shader, const glm::vec2 position, const std::string_view hex_color)
+    : m_shader(shader), m_position{position}, m_color{hexToRGBVec(hex_color)}{}
 
 void Sprite::draw() const {
     glm::mat4 model = glm::mat4(1.0f);
@@ -14,6 +31,10 @@ void Sprite::draw() const {
     m_shader.setValue("color", m_color);
 
     m_mesh.draw();
+}
+
+void Sprite::setColor(const std::string_view hex_color) {
+    m_color = hexToRGBVec(hex_color);
 }
 
 

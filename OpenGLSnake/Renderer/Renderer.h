@@ -27,10 +27,10 @@ private:
     std::vector<Sprite> m_sprites;
     unsigned int quadVAO;
 
-    std::unordered_map<char, glm::vec3> color_map {
-        {'0', {0, 0, 0}},
-        {'1', {1, 0, 0}},
-        {'2', {0, 1, 0}},
-        {'3', {0, 0, 1}},
+    std::unordered_map<char, std::string_view> color_map {
+        {'0', {"222222"}},
+        {'1', {"f0f0f0"}},
+        {'2', {"849476"}},
+        {'3', {"b1556c"}},
     };
 };

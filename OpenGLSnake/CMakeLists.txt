@@ -28,6 +28,8 @@ set(SOURCE_FILES main.cpp
         Game/Tile.h
         Renderer/Sprite.cpp
         Renderer/Sprite.h
+        Renderer/Texture.cpp
+        Renderer/Texture.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

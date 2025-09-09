@@ -35,9 +35,10 @@ void Renderer::draw(std::string_view board) {
 }
 
 void Renderer::initSprites() {
-    for (int i{0}; i < 8; ++i) {
-        for (int j{0}; j < 8; ++j) {
-            m_sprites.emplace_back(m_shader, glm::vec2{j, i}, glm::vec3{1, 1, 1});
+    constexpr int size {Settings::Game::board_size};
+    for (int i{0}; i < size; ++i) {
+        for (int j{0}; j < size; ++j) {
+            m_sprites.emplace_back(m_shader, glm::vec2{j, i}, "#000000");
         }
     }
 }
