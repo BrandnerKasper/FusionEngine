@@ -19,7 +19,7 @@ void Renderer::init() {
     m_shader.setValue("projection", projection);
 
     createTex();
-    createNDC();
+    // createNDC();
 
     initSprites();
 }
@@ -59,8 +59,7 @@ void Renderer::draw(std::string_view board) {
     glBindTexture(GL_TEXTURE_2D, m_colorTex);
     m_present.setValue("uTex", 0);
 
-    glBindVertexArray(m_quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    m_ndc.draw();
 
     // swap and check
     glfwSwapBuffers(m_window);
@@ -68,10 +67,22 @@ void Renderer::draw(std::string_view board) {
 }
 
 void Renderer::initSprites() {
-    constexpr int size {Settings::Game::board_size};
+    constexpr int size{Settings::Game::board_size};
     for (int i{0}; i < size; ++i) {
         for (int j{0}; j < size; ++j) {
-            m_sprites.emplace_back(m_shader, glm::vec2{j, i}, "#000000");
+            m_sprites.emplace_back(
+                m_shader,
+                std::vector{
+                    0.0f, 1.0f, 0.0f, 1.0f,
+                    1.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 0.0f,
+
+                    0.0f, 1.0f, 0.0f, 1.0f,
+                    1.0f, 1.0f, 1.0f, 1.0f,
+                    1.0f, 0.0f, 1.0f, 0.0f
+                },
+                glm::vec2{j, i},
+                "#000000");
         }
     }
 }
@@ -104,28 +115,4 @@ void Renderer::createTex() {
         throw std::runtime_error("Failed to initialize texture buffer");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-float NDC_quad[] = {
-    -1.f,-1.f,  0.f,0.f,
-     1.f,-1.f,  1.f,0.f,
-     1.f, 1.f,  1.f,1.f,
-    -1.f,-1.f,  0.f,0.f,
-     1.f, 1.f,  1.f,1.f,
-    -1.f, 1.f,  0.f,1.f
-};
-
-void Renderer::createNDC() {
-    glGenVertexArrays(1, &m_quadVAO);
-    glGenBuffers(1, &m_quadVBO);
-    glBindVertexArray(m_quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(NDC_quad), NDC_quad, GL_STATIC_DRAW);
-
-    glad_glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)(2*sizeof(float)));
-
-    glBindVertexArray(0);
 }

@@ -19,7 +19,6 @@ private:
     void initSprites();
     void updateSprites(std::string_view board);
     void createTex();
-    void createNDC();
 
 private:
     GLFWwindow* m_window;
@@ -29,12 +28,21 @@ private:
     // std::string_view m_fragment_shader_path {"shaders/fragment.frag"};
     Shader m_shader {"shaders/vertex.vert", "shaders/fragment.frag"};
     std::vector<Sprite> m_sprites;
-    unsigned int m_quadVAO;
-    unsigned int m_quadVBO;
 
+    Mesh m_ndc{
+        {
+            -1.f, -1.f, 0.f, 0.f,
+             1.f, -1.f, 1.f, 0.f,
+             1.f,  1.f, 1.f, 1.f,
+            -1.f, -1.f, 0.f, 0.f,
+             1.f,  1.f, 1.f, 1.f,
+            -1.f,  1.f, 0.f, 1.f
+        }
+    };
     unsigned int m_FBO, m_colorTex;
     int m_offW {32}, m_offH {32};
     Shader m_present {"shaders/present.vert", "shaders/present.frag"};
+
 
     std::unordered_map<char, std::string_view> color_map {
         {'0', {"222222"}},
