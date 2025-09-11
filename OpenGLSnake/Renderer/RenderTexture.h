@@ -9,6 +9,7 @@ public:
     RenderTexture();
 
     void draw();
+    void getTextureImage();
     unsigned int m_colorTex {0};
 
 private:
@@ -27,4 +28,5 @@ private:
     };
     int m_offW {32}, m_offH {32}; // size of board
     Shader m_present {"shaders/present.vert", "shaders/present.frag"};
+    std::vector<unsigned char> pixels;
 };

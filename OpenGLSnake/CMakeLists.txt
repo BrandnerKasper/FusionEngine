@@ -66,4 +66,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 else ()
     set(ASSET_ROOT ${CMAKE_SOURCE_DIR}/assets/)
 endif ()
-target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${ASSET_ROOT}")
+
+#define data root
+set(DATA_ROOT ${CMAKE_SOURCE_DIR}/data/)
+
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${ASSET_ROOT}" DATA_ROOT="${DATA_ROOT}")

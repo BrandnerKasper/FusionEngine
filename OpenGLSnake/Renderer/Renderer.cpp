@@ -46,6 +46,7 @@ void Renderer::draw(std::string_view board) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     int winW, winH;
     glfwGetFramebufferSize(m_window, &winW, &winH);
     glViewport(0, 0, winW, winH);
@@ -53,6 +54,8 @@ void Renderer::draw(std::string_view board) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     m_render_texture.draw();
+
+    m_render_texture.getTextureImage();
 
     // swap and check
     glfwSwapBuffers(m_window);
