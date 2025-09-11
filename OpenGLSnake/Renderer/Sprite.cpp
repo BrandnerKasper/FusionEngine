@@ -16,8 +16,7 @@ glm::vec3 hexToRGBVec(std::string_view hex_color) {
     return {r, g, b};
 }
 
-
-Sprite::Sprite(const Shader& shader, const glm::vec2 position, const std::string_view hex_color)
+Sprite::Sprite(Shader& shader, const glm::vec2 position, const std::string_view hex_color)
     : m_shader(shader), m_position{position}, m_color{hexToRGBVec(hex_color)}{}
 
 void Sprite::draw() const {
