@@ -1,4 +1,3 @@
-#include <print>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
@@ -18,8 +17,7 @@ void Renderer::init() {
         size, 0.0f, -1.0f, 1.0f);
     m_shader.setValue("projection", projection);
 
-    createTex();
-    // createNDC();
+    createBuffer();
 
     initSprites();
 }
@@ -32,7 +30,7 @@ void Renderer::draw(std::string_view board) {
     updateSprites(board);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-    glViewport(0, 0, m_offW, m_offH);
+    glViewport(0, 0, 32, 32);
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.f, 0.f, 0.f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT
@@ -54,12 +52,7 @@ void Renderer::draw(std::string_view board) {
     glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    m_present.use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_colorTex);
-    m_present.setValue("uTex", 0);
-
-    m_ndc.draw();
+    m_render_texture.draw();
 
     // swap and check
     glfwSwapBuffers(m_window);
@@ -96,11 +89,7 @@ void Renderer::updateSprites(std::string_view board) {
     }
 }
 
-void Renderer::createTex() {
-    glGenTextures(1, &m_colorTex);
-    glBindTexture(GL_TEXTURE_2D, m_colorTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_offW, m_offH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
+void Renderer::createBuffer() {
     // parameter for nearest neighbour scaling
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -110,7 +99,7 @@ void Renderer::createTex() {
     // FBO (no depth needed)
     glGenFramebuffers(1, &m_FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_render_texture.m_colorTex, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Failed to initialize texture buffer");
     }

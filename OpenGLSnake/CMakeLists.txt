@@ -30,6 +30,8 @@ set(SOURCE_FILES main.cpp
         Renderer/Sprite.h
         Renderer/Texture.cpp
         Renderer/Texture.h
+        Renderer/RenderTexture.cpp
+        Renderer/RenderTexture.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

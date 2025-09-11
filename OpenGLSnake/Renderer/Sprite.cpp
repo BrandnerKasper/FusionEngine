@@ -4,6 +4,9 @@
 #include "Sprite.h"
 
 glm::vec3 hexToRGBVec(std::string_view hex_color) {
+    if (!hex_color.empty() && hex_color.front() == '#')
+        hex_color.remove_prefix(1); // drop the '#'
+
     unsigned int rgb = 0;
     std::stringstream ss;
     ss << std::hex << hex_color;
