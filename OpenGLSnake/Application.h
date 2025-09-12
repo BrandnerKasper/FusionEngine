@@ -43,6 +43,7 @@ private:
 
     Game m_game;
     std::string board_state {};
+    std::string prev_board_state {};
 
     double m_last_render {};
 };

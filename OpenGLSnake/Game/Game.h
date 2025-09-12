@@ -44,7 +44,8 @@ public:
     virtual ~Game() = default;
 
     void run(double deltaTime, Input::Action action);
-    const std::string getBoardState();
+
+    std::string getBoardState() const;
 
 private:
     void init();

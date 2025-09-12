@@ -50,6 +50,7 @@ void Application::run() {
         processInput();
         update();
         render();
+        genData();
     }
 }
 
@@ -100,5 +101,9 @@ void Application::openGLRender(const std::string_view board) {
 }
 
 void Application::genData() {
-
+    if (prev_board_state != board_state) {
+        prev_board_state = board_state;
+        m_ascii_renderer.generateData();
+        m_renderer->generateData();
+    }
 }

@@ -22,7 +22,7 @@ void Game::run(double deltaTime, Input::Action action) {
     }
 }
 
-const std::string Game::getBoardState() {
+std::string Game::getBoardState() const {
     auto s = m_board.toString();
 
     std::istringstream iss(s);
