@@ -48,6 +48,10 @@ void Renderer::draw(std::string_view board) {
     glfwPollEvents();
 }
 
+void Renderer::generateData() {
+    m_render_texture.getTextureImage();
+}
+
 void Renderer::initSprites() {
     constexpr int size{Settings::Game::board_size};
     for (int i{0}; i < size; ++i) {
