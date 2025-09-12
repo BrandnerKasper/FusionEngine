@@ -32,6 +32,8 @@ set(SOURCE_FILES main.cpp
         Renderer/Texture.h
         Renderer/RenderTexture.cpp
         Renderer/RenderTexture.h
+        ASCIIRenderer.cpp
+        ASCIIRenderer.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

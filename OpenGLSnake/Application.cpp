@@ -91,18 +91,14 @@ void Application::render() {
 
 
 void Application::terminalRender(const std::string_view board) {
-    std::string terminal {};
-    for (const auto c: board) {
-        if (c == '\n')
-            terminal += c;
-        else {
-            terminal += ascii[c];
-        }
-    }
-    std::cout << terminal << std::endl;
+    m_ascii_renderer.draw(board);
 }
 
-void Application::openGLRender(std::string_view board) {
+void Application::openGLRender(const std::string_view board) {
     // OpenGL render
     m_renderer->draw(board);
+}
+
+void Application::genData() {
+
 }
