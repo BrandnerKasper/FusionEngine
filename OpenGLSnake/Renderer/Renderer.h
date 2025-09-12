@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../settings.h"
 #include "Shader.h"
 #include "Sprite.h"
 #include "RenderTexture.h"
@@ -19,17 +20,14 @@ private:
     void init();
     void initSprites();
     void updateSprites(std::string_view board);
-    void createBuffer();
 
 private:
     GLFWwindow* m_window;
+    glm::mat4 camera;
 
-    Shader m_shader {"shaders/vertex.vert", "shaders/fragment.frag"};
     std::vector<Sprite> m_sprites;
 
-
-    unsigned int m_FBO {0};
-    RenderTexture m_render_texture {};
+    RenderTexture m_render_texture {Settings::Game::board_size * Settings::Render::tile_size};
 
     std::unordered_map<char, std::string_view> color_map {
         {'0', {"#222222"}},

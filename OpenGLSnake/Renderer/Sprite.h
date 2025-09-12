@@ -1,5 +1,6 @@
 #pragma once
 #include <string_view>
+#include <glm/glm.hpp>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -8,14 +9,24 @@
 
 class Sprite {
 public:
-    Sprite(Shader& shader, const std::vector<float>& vertices, glm::vec2 position, std::string_view hex_color);
+    Sprite(glm::vec2 position, std::string_view hex_color);
 
-    void draw() const;
+    void draw(const glm::mat4& projection) const;
     void setColor(std::string_view hex_color);
 
 private:
-    Shader& m_shader;
-    Mesh m_mesh;
+    Shader m_shader {"shaders/vertex.vert", "shaders/fragment.frag"};
+    Mesh m_mesh{
+        {
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f
+        }
+    };
 
     glm::vec2 m_position;
     glm::vec3 m_color;
