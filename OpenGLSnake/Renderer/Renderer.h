@@ -19,6 +19,7 @@ public:
 
 private:
     void init();
+    void initCamera();
     void initSprites();
     void updateSprites(std::string_view board);
 

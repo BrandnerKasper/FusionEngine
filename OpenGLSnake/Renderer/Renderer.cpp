@@ -11,16 +11,20 @@ Renderer::Renderer(GLFWwindow* window)
 }
 
 void Renderer::init() {
+    initCamera();
+    initSprites();
+}
+
+void Renderer::initCamera() {
     constexpr auto size = static_cast<float>(Settings::Game::board_size);
     camera = glm::ortho(0.0f, size, size, 0.0f, -1.0f, 1.0f);
-    initSprites();
 }
 
 Renderer::~Renderer() {
     m_window = nullptr;
 }
 
-void Renderer::draw(std::string_view board) {
+void Renderer::draw(const std::string_view board) {
     updateSprites(board);
 
     m_render_texture.begin();
@@ -40,8 +44,6 @@ void Renderer::draw(std::string_view board) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     m_render_texture.draw();
-
-    m_render_texture.getTextureImage();
 
     // swap and check
     glfwSwapBuffers(m_window);
@@ -63,7 +65,7 @@ void Renderer::initSprites() {
     }
 }
 
-void Renderer::updateSprites(std::string_view board) {
+void Renderer::updateSprites(const std::string_view board) {
     size_t idx {0};
     for (const auto c: board) {
         if (c == '\n')
