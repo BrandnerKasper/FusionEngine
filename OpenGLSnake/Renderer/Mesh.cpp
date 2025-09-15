@@ -2,33 +2,33 @@
 
 #include "Mesh.h"
 
-float vertices[] = {
-    // pos      // tex
-    0.0f, 1.0f, 0.0f, 1.0f,
-    1.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 0.0f,
+// float vertices[] = {
+//     // pos      // tex
+//     0.0f, 1.0f, 0.0f, 1.0f,
+//     1.0f, 0.0f, 1.0f, 0.0f,
+//     0.0f, 0.0f, 0.0f, 0.0f,
+//
+//     0.0f, 1.0f, 0.0f, 1.0f,
+//     1.0f, 1.0f, 1.0f, 1.0f,
+//     1.0f, 0.0f, 1.0f, 0.0f
+// };
 
-    0.0f, 1.0f, 0.0f, 1.0f,
-    1.0f, 1.0f, 1.0f, 1.0f,
-    1.0f, 0.0f, 1.0f, 0.0f
-};
 
-
-Mesh::Mesh() {
+Mesh::Mesh(const std::vector<float>& vertices) {
     unsigned int VBO;
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &VBO);
 
     glBindVertexArray(m_VAO);
-
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
 
-    glBindVertexArray(m_VAO);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(0); // pos
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(1); // uv
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 

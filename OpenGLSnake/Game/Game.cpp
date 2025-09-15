@@ -12,7 +12,7 @@ Game::Game(){
     generatePellet();
 }
 
-void Game::run(double deltaTime, Input::Action action) {
+bool Game::run(const double deltaTime, const Input::Action action) {
     m_lastUpdate += deltaTime;
     if (m_lastUpdate >= Settings::Game::tick) {
         validateAction(action);
@@ -20,9 +20,10 @@ void Game::run(double deltaTime, Input::Action action) {
             update();
         m_lastUpdate -= Settings::Game::tick;
     }
+    return m_running;
 }
 
-const std::string Game::getBoardState() {
+std::string Game::getBoardState() const {
     auto s = m_board.toString();
 
     std::istringstream iss(s);
@@ -91,9 +92,9 @@ void Game::setPlayer() {
 
 void Game::generatePellet() {
     std::vector<Position> poss_spawn_pos {};
-    for (const auto& tile : m_board()) {
-        if (tile.type == Tile::Empty)
-            poss_spawn_pos.push_back(tile.pos);
+    for (const auto&[pos, type] : m_board()) {
+        if (type == Tile::Empty)
+            poss_spawn_pos.push_back(pos);
     }
 
     const auto random_idx = Random::get<size_t>(0, poss_spawn_pos.size()-1);
@@ -125,4 +126,13 @@ void Game::validateAction(const Input::Action action) {
             break;
     }
     m_last_action = action;
+}
+
+void Game::reset() {
+    init();
+    m_player.reset();
+    setPlayer();
+    generatePellet();
+    m_running = true;
+    m_last_action = Input::Up;
 }

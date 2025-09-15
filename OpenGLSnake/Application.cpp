@@ -7,6 +7,7 @@ Application::Application() {
     init();
     Input::m_window = m_window;
     m_renderer = std::make_unique<Renderer>(m_window);
+    m_ascii_renderer = std::make_unique<ASCIIRenderer>();
 }
 
 Application::~Application() {
@@ -50,6 +51,7 @@ void Application::run() {
         processInput();
         update();
         render();
+        genData();
     }
 }
 
@@ -75,8 +77,12 @@ void Application::processInput() {
 void Application::update() {
     if (m_current_action == Input::Pause)
         return;
-    m_game.run(m_deltaTime, m_current_action);
-    board_state = m_game.getBoardState();
+    if (auto play = m_game.run(m_deltaTime, m_current_action))
+        board_state = m_game.getBoardState();
+    else {
+        m_current_action = Input::Up;
+        m_game.reset();
+    }
 }
 
 void Application::render() {
@@ -90,19 +96,22 @@ void Application::render() {
 }
 
 
-void Application::terminalRender(const std::string_view board) {
-    std::string terminal {};
-    for (const auto c: board) {
-        if (c == '\n')
-            terminal += c;
-        else {
-            terminal += ascii[c];
-        }
-    }
-    std::cout << terminal << std::endl;
+void Application::terminalRender(const std::string_view board) const {
+    m_ascii_renderer->draw(board);
 }
 
-void Application::openGLRender(std::string_view board) {
-    // OpenGL render
+void Application::openGLRender(const std::string_view board) const {
     m_renderer->draw(board);
+}
+
+void Application::genData() {
+    static int count {};
+    if (count == Settings::Data::amount)
+        return;
+    if (prev_board_state != board_state) {
+        prev_board_state = board_state;
+        m_ascii_renderer->generateData("in", count);
+        m_renderer->generateData("out", count);
+        ++count;
+    }
 }

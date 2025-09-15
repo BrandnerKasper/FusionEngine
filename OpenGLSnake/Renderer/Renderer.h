@@ -4,33 +4,37 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../settings.h"
 #include "Shader.h"
 #include "Sprite.h"
+#include "RenderTexture.h"
 
 
 class Renderer {
 public:
-    Renderer(GLFWwindow* window);
+    explicit Renderer(GLFWwindow* window);
     virtual ~Renderer();
     void draw(std::string_view board);
+    void generateData(std::string_view path, int count);
 
 private:
+    void init();
+    void initCamera();
     void initSprites();
     void updateSprites(std::string_view board);
+
 private:
     GLFWwindow* m_window;
+    glm::mat4 camera;
 
-    // glm::mat4 camera = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
-    // std::string_view m_vertex_shader_path {"shaders/vertex.vert"};
-    // std::string_view m_fragment_shader_path {"shaders/fragment.frag"};
-    Shader m_shader {"shaders/vertex.vert", "shaders/fragment.frag"};
     std::vector<Sprite> m_sprites;
-    unsigned int quadVAO;
+
+    RenderTexture m_render_texture {Settings::Game::board_size * Settings::Render::tile_size};
 
     std::unordered_map<char, std::string_view> color_map {
-        {'0', {"222222"}},
-        {'1', {"f0f0f0"}},
-        {'2', {"849476"}},
-        {'3', {"b1556c"}},
+        {'0', {"#222222"}},
+        {'1', {"#f0f0f0"}},
+        {'2', {"#849476"}},
+        {'3', {"#b1556c"}},
     };
 };

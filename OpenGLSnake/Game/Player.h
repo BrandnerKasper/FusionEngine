@@ -12,6 +12,7 @@ public:
 
     void move(Input::Action action);
     void eat();
+    void reset();
 
     std::vector<Tile> body {};
     Position head_pos{};

@@ -43,8 +43,11 @@ public:
     explicit Game();
     virtual ~Game() = default;
 
-    void run(double deltaTime, Input::Action action);
-    const std::string getBoardState();
+    bool run(double deltaTime, Input::Action action);
+
+    std::string getBoardState() const;
+
+    void reset();
 
 private:
     void init();
@@ -57,8 +60,6 @@ private:
     bool m_running {true};
     double m_lastUpdate{};
 
-    // TODO use Grid class instead of std::array -> write get and set methods based on pos
-    // std::array<Tile, Settings::Game::board_size * Settings::Game::board_size> m_board;
     Board m_board {Settings::Game::board_size};
     Input::Action m_last_action {Input::Up};
     Player m_player {};

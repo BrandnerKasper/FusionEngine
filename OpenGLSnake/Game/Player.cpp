@@ -46,3 +46,8 @@ void Player::eat() {
     body.push_back({tail_pos.value(), Tile::Player});
     tail_pos = std::nullopt;
 }
+
+void Player::reset() {
+    body.clear();
+    init();
+}
