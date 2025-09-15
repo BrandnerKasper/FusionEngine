@@ -23,8 +23,8 @@ private:
     void processInput();
     void update();
     void render();
-    void terminalRender(std::string_view board);
-    void openGLRender(std::string_view board);
+    void terminalRender(std::string_view board) const;
+    void openGLRender(std::string_view board) const;
     void genData();
 
 private:
@@ -39,7 +39,7 @@ private:
     Input m_input;
     Input::Action m_current_action{Input::Up};
     std::unique_ptr<Renderer> m_renderer;
-    ASCIIRenderer m_ascii_renderer;
+    std::unique_ptr<ASCIIRenderer> m_ascii_renderer;
 
     Game m_game;
     std::string board_state {};

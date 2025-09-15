@@ -24,6 +24,6 @@ namespace Settings {
     }
 
     namespace Data {
-        constexpr int count {0};
+        constexpr int amount {1000};
     }
 }

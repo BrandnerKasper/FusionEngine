@@ -18,6 +18,8 @@ void Game::run(double deltaTime, Input::Action action) {
         validateAction(action);
         if (m_running)
             update();
+        else
+            reset();
         m_lastUpdate -= Settings::Game::tick;
     }
 }
@@ -125,4 +127,12 @@ void Game::validateAction(const Input::Action action) {
             break;
     }
     m_last_action = action;
+}
+
+void Game::reset() {
+    init();
+    m_player = Player();
+    setPlayer();
+    generatePellet();
+    m_running = true;
 }

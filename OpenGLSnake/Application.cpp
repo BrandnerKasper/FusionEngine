@@ -7,6 +7,7 @@ Application::Application() {
     init();
     Input::m_window = m_window;
     m_renderer = std::make_unique<Renderer>(m_window);
+    m_ascii_renderer = std::make_unique<ASCIIRenderer>();
 }
 
 Application::~Application() {
@@ -91,20 +92,21 @@ void Application::render() {
 }
 
 
-void Application::terminalRender(const std::string_view board) {
-    m_ascii_renderer.draw(board);
+void Application::terminalRender(const std::string_view board) const {
+    m_ascii_renderer->draw(board);
 }
 
-void Application::openGLRender(const std::string_view board) {
-    // OpenGL render
+void Application::openGLRender(const std::string_view board) const {
     m_renderer->draw(board);
 }
 
 void Application::genData() {
-    static int count {Settings::Data::count};
+    static int count {};
+    if (count == Settings::Data::amount)
+        return;
     if (prev_board_state != board_state) {
         prev_board_state = board_state;
-        m_ascii_renderer.generateData("in", count);
+        m_ascii_renderer->generateData("in", count);
         m_renderer->generateData("out", count);
         ++count;
     }

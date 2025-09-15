@@ -54,12 +54,12 @@ private:
     void generatePellet();
     void validateAction(Input::Action action);
 
+    void reset();
+
 private:
     bool m_running {true};
     double m_lastUpdate{};
 
-    // TODO use Grid class instead of std::array -> write get and set methods based on pos
-    // std::array<Tile, Settings::Game::board_size * Settings::Game::board_size> m_board;
     Board m_board {Settings::Game::board_size};
     Input::Action m_last_action {Input::Up};
     Player m_player {};
