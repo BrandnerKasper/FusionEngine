@@ -18,7 +18,7 @@ I propose a different idea, what if the game is internally rendered in a simplif
 We then use the simplified visualization and feed that into a network to generate the complex visualization.
 
 Here is an example:
-![idea](img/Idea.png)
+![idea](img/idea.png)
 
 Instead of abstracting the game and its logic and let the diffusion network embeed (and therefore learn) the game.
 We only use it as a different visualization method and let the game engine still handle the logic.
@@ -33,7 +33,8 @@ A TODO list follows.
 ### TODO:
 
 - [x] Checkout Pytorch CPP so we can use neural networks in a Cpp project
-- [ ] Write a simple ASCII game
-- [ ] Write a renderer in OpenGL/Vulcan to visualize the game differently
-- [ ] Check how we should feed the ASCII representation to the neural network
-- [ ] abstract game logic and UI from the representations
+- [x] Write a simple ASCII game
+- [x] Write a renderer in OpenGL/Vulcan to visualize the game differently
+- [x] Generate a dataset of ASCII to PNG (for now small!)
+- [ ] Find a suitable neural network architecture
+- [ ] Hook the trained neural network into the cpp application and actually play via a neural engine!
