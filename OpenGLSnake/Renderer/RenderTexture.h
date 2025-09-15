@@ -13,7 +13,7 @@ public:
     void draw();
     void end(int width, int height);
 
-    void getTextureImage();
+    const std::vector<unsigned char>& getTextureImage();
 
 private:
     void create();

@@ -11,10 +11,8 @@ void ASCIIRenderer::draw(const std::string_view board) {
     std::cout << state << std::endl;
 }
 
-void ASCIIRenderer::generateData() const {
-    static int count {};
-
-    std::ofstream out(data::path(std::to_string(count++)+".txt"));
+void ASCIIRenderer::generateData(std::string_view path, const int count) const {
+    std::ofstream out(data::path(std::format("{}/{:04}.txt", path, count)));
     if (!out) {
         throw std::runtime_error("Writing ASCII to txt file failed.");
     }

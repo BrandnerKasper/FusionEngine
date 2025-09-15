@@ -20,5 +20,6 @@ namespace Settings {
     namespace Render {
         constexpr double frame_time = 1.0f/60.0f;
         constexpr int tile_size {1};
+        constexpr int render_texture_size {Game::board_size * tile_size};
     }
 }

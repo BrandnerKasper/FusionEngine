@@ -1,9 +1,12 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../extern/stb_image_write.h"
 
 #include "Renderer.h"
 #include "../settings.h"
+#include "../assets.h"
 
 Renderer::Renderer(GLFWwindow* window)
     : m_window{window}{
@@ -50,8 +53,22 @@ void Renderer::draw(const std::string_view board) {
     glfwPollEvents();
 }
 
-void Renderer::generateData() {
-    m_render_texture.getTextureImage();
+void saveTexAsImg(const std::string& filename, const int w, const int h, const std::vector<unsigned char>& rgba) {
+    // Flip vertically for correct orientation
+    std::vector<unsigned char> flipped(w * h * 4);
+    for (int y = 0; y < h; ++y) {
+        memcpy(&flipped[y * w * 4],
+               &rgba[(h - 1 - y) * w * 4],
+               w * 4);
+    }
+
+    stbi_write_png(filename.c_str(), w, h, 4, flipped.data(), w*4);
+}
+
+void Renderer::generateData(std::string_view path, const int count) {
+    const auto pixels = m_render_texture.getTextureImage();
+    constexpr auto size {Settings::Render::render_texture_size};
+    saveTexAsImg(data::path(std::format("{}/{:04}.png", path, count)), size, size, pixels);
 }
 
 void Renderer::initSprites() {

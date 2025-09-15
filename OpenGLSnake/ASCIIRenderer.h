@@ -9,7 +9,7 @@ public:
     ASCIIRenderer() = default;
 
     void draw(std::string_view board);
-    void generateData() const;
+    void generateData(std::string_view path, int count) const;
 
 private:
     void create(std::string_view board);

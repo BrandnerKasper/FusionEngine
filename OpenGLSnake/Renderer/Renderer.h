@@ -15,7 +15,7 @@ public:
     explicit Renderer(GLFWwindow* window);
     virtual ~Renderer();
     void draw(std::string_view board);
-    void generateData();
+    void generateData(std::string_view path, int count);
 
 private:
     void init();
