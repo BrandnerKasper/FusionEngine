@@ -12,16 +12,15 @@ Game::Game(){
     generatePellet();
 }
 
-void Game::run(double deltaTime, Input::Action action) {
+bool Game::run(double deltaTime, Input::Action action) {
     m_lastUpdate += deltaTime;
     if (m_lastUpdate >= Settings::Game::tick) {
         validateAction(action);
         if (m_running)
             update();
-        else
-            reset();
         m_lastUpdate -= Settings::Game::tick;
     }
+    return m_running;
 }
 
 std::string Game::getBoardState() const {
@@ -135,4 +134,5 @@ void Game::reset() {
     setPlayer();
     generatePellet();
     m_running = true;
+    m_last_action = Input::Up;
 }

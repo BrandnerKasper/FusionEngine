@@ -77,8 +77,12 @@ void Application::processInput() {
 void Application::update() {
     if (m_current_action == Input::Pause)
         return;
-    m_game.run(m_deltaTime, m_current_action);
-    board_state = m_game.getBoardState();
+    if (auto play = m_game.run(m_deltaTime, m_current_action))
+        board_state = m_game.getBoardState();
+    else {
+        m_current_action = Input::Up;
+        m_game.reset();
+    }
 }
 
 void Application::render() {

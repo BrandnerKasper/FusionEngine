@@ -43,9 +43,11 @@ public:
     explicit Game();
     virtual ~Game() = default;
 
-    void run(double deltaTime, Input::Action action);
+    bool run(double deltaTime, Input::Action action);
 
     std::string getBoardState() const;
+
+    void reset();
 
 private:
     void init();
@@ -53,8 +55,6 @@ private:
     void setPlayer();
     void generatePellet();
     void validateAction(Input::Action action);
-
-    void reset();
 
 private:
     bool m_running {true};
