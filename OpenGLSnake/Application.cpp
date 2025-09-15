@@ -101,7 +101,7 @@ void Application::openGLRender(const std::string_view board) {
 }
 
 void Application::genData() {
-    static int count {};
+    static int count {Settings::Data::count};
     if (prev_board_state != board_state) {
         prev_board_state = board_state;
         m_ascii_renderer.generateData("in", count);
