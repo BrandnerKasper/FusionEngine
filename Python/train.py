@@ -6,6 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchmetrics import PeakSignalNoiseRatio
 
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from mlp import MLP
 from dataloader import ASCIISnake, tensor_to_ascii
@@ -27,7 +28,7 @@ def train() -> None:
     num_workers = 8
     learning_rate = 0.001
     epochs = 100
-    batch_size = 8
+    batch_size = 64
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fct = nn.L1Loss()
 
@@ -79,7 +80,16 @@ def train() -> None:
 
             if do_once:
                 ascii_str = tensor_to_ascii(in_text[0].detach().cpu())
-                writer.add_text("Model/In", ascii_str, epoch)
+                fig, axes = plt.subplots(1, 1, figsize=(3, 6))
+                axes.axis("off")
+                axes.text(
+                    0.5, 0.5, ascii_str,
+                    ha="center", va="center",
+                    family="monospace", fontsize=8
+                )
+                axes.set_title("ASCII Grid")
+                writer.add_figure("Model/In", fig, epoch)
+                plt.close(fig)
                 writer.add_image("Model/Out", pred[0].detach().cpu(), epoch)
                 writer.add_image("Model/GT", out_img[0].detach().cpu(), epoch)
                 do_once = False
