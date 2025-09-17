@@ -18,7 +18,7 @@ class MLP(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.flatten(x)
         x = self.linear_relu_stack(x)
-        x = x.view(3, 32, 32)
+        x = x.view(x.size(0), 3, 32, 32)
         x = torch.sigmoid(x)
         return x
 

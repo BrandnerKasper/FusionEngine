@@ -72,7 +72,7 @@ def load_txt(path: str) -> torch.Tensor:
     with open(f"{path}.txt", "r", encoding="utf-8") as file:
         lines = [line.rstrip("\n") for line in file]
     grid = [[char_map.get(c) for c in line] for line in lines]
-    return torch.tensor(grid)
+    return torch.tensor(grid, dtype=torch.float32)
 
 
 def load_img(path: str) -> torch.Tensor:
