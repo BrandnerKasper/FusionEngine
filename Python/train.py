@@ -9,6 +9,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 from mlp import MLP
+from cnn import CNN
 from dataloader import ASCIISnake, tensor_to_ascii
 
 torch.manual_seed(42)
@@ -22,7 +23,7 @@ def save_model(filename: str, model: nn.Module) -> None:
 def train() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = MLP().to(device)
+    model = CNN().to(device)
 
     # Hyperparameters
     num_workers = 8
@@ -49,11 +50,11 @@ def train() -> None:
         total_loss = 0.0
 
         # Train
-        for in_txt, out_img in tqdm(train_loader, desc=f'Training, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
-            in_txt, out_img = in_txt.to(device), out_img.to(device)
+        for in_txt, gt_img in tqdm(train_loader, desc=f'Training, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
+            in_txt, gt_img = in_txt.to(device), gt_img.to(device)
 
             pred = model(in_txt)
-            loss = loss_fct(pred, out_img)
+            loss = loss_fct(pred, gt_img)
 
             loss.backward()
             optimizer.step()
@@ -72,11 +73,11 @@ def train() -> None:
             continue
         do_once = True
 
-        for in_text, out_img in tqdm(val_loader, desc=f'Val, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
-            in_text, out_img = in_text.to(device), out_img.to(device)
+        for in_text, gt_img in tqdm(val_loader, desc=f'Val, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
+            in_text, gt_img = in_text.to(device), gt_img.to(device)
             pred = model(in_text)
             pred = torch.clamp(pred, min=0.0, max=1.0)
-            psnr.update(pred, out_img)
+            psnr.update(pred, gt_img)
 
             if do_once:
                 ascii_str = tensor_to_ascii(in_text[0].detach().cpu())
@@ -91,7 +92,7 @@ def train() -> None:
                 writer.add_figure("Model/In", fig, epoch)
                 plt.close(fig)
                 writer.add_image("Model/Out", pred[0].detach().cpu(), epoch)
-                writer.add_image("Model/GT", out_img[0].detach().cpu(), epoch)
+                writer.add_image("Model/GT", gt_img[0].detach().cpu(), epoch)
                 do_once = False
 
         average_psnr = psnr.compute().item()
@@ -102,7 +103,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("MLP", model)
+    save_model("CNN", model)
 
 
 def main() -> None:
