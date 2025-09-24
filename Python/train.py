@@ -26,8 +26,8 @@ def train() -> None:
 
     hot_encode = True
     in_cha = 4 if hot_encode else 1
-    # model = CNN(in_cha).to(device)
-    model = MLP(in_cha).to(device)
+    model = CNN(in_cha).to(device)
+    # model = MLP(in_cha).to(device)
 
     # Hyperparameters
     num_workers = 8
@@ -113,7 +113,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("MLP", model)
+    save_model("CNN_Batch", model)
 
 
 def main() -> None:
