@@ -4,10 +4,10 @@ from torchinfo import summary
 
 
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self, in_cha: int = 1):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv2d(1, 32, 3, padding=1),
+            nn.Conv2d(in_cha, 32, 3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(32, 32, 3, padding=1),
             nn.ReLU(inplace=True),

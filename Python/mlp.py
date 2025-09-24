@@ -4,11 +4,11 @@ from torchinfo import summary
 
 
 class MLP(nn.Module):
-    def __init__(self):
+    def __init__(self, in_cha: int = 1):
         super().__init__()
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(32*32, 512),
+            nn.Linear(32*32*in_cha, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),
