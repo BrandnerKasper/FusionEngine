@@ -4,14 +4,15 @@ from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
 from torchvision.transforms import functional as FV
 
-from utility import load_txt, load_img, tensor_to_ascii
+from utility import load_txt, load_img, grid_to_ascii, load_txt_one_hot_encode, one_hot_grid_to_ascii
 
 
 class ASCIISnake(Dataset):
-    def __init__(self, root: str, data_samples: int) -> None:
+    def __init__(self, root: str, data_samples: int, hot_encode: bool = False) -> None:
         self.root_in = os.path.join(root, "in")
         self.root_out = os.path.join(root, "out")
         self.data_samples = data_samples
+        self.hot_encode = hot_encode
         self.filenames = self.init_filenames()
 
     def init_filenames(self) -> list[str]:
@@ -28,15 +29,20 @@ class ASCIISnake(Dataset):
         in_path = os.path.join(self.root_in, filename)
         out_path = os.path.join(self.root_out, filename)
 
-        txt = load_txt(in_path)
+        if self.hot_encode:
+            txt = load_txt_one_hot_encode(in_path)
+        else:
+            txt = load_txt(in_path)
         img = load_img(out_path)
 
         return txt, img
 
     def display_item(self, idx: int) -> None:
         txt_tensor, img_tensor = self[idx]
-
-        ascii_str = tensor_to_ascii(txt_tensor)
+        if self.hot_encode:
+            ascii_str = one_hot_grid_to_ascii(txt_tensor)
+        else:
+            ascii_str = grid_to_ascii(txt_tensor)
         img = FV.to_pil_image(img_tensor)
 
         fig, axes = plt.subplots(1, 2, figsize=(8, 6))
@@ -63,7 +69,7 @@ class ASCIISnake(Dataset):
 
 def main() -> None:
     path = "data/test"
-    ascii_snake_data = ASCIISnake(path, 1000)
+    ascii_snake_data = ASCIISnake(path, 1000, False)
     ascii_snake_data.display_item(0)
 
 
