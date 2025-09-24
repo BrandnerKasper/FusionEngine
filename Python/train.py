@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 
 from mlp import MLP
 from cnn import CNN
-from dataloader import ASCIISnake, tensor_to_ascii
+from dataloader import ASCIISnake, grid_to_ascii
+from utility import one_hot_grid_to_ascii
 
 torch.manual_seed(42)
 
@@ -23,20 +24,23 @@ def save_model(filename: str, model: nn.Module) -> None:
 def train() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = CNN().to(device)
+    hot_encode = True
+    in_cha = 4 if hot_encode else 1
+    # model = CNN(in_cha).to(device)
+    model = MLP(in_cha).to(device)
 
     # Hyperparameters
     num_workers = 8
     learning_rate = 0.001
     epochs = 100
-    batch_size = 64
+    batch_size = 1
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fct = nn.L1Loss()
 
     # Data
-    train_dataset = ASCIISnake("data/train", 1000)
+    train_dataset = ASCIISnake("data/train", 1000, hot_encode=hot_encode)
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
-    val_dataset = ASCIISnake("data/val", 200)
+    val_dataset = ASCIISnake("data/val", 200, hot_encode=hot_encode)
     val_loader = DataLoader(dataset=val_dataset, batch_size=1, num_workers=num_workers, shuffle=True)
 
     # Writer
@@ -73,14 +77,17 @@ def train() -> None:
             continue
         do_once = True
 
-        for in_text, gt_img in tqdm(val_loader, desc=f'Val, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
-            in_text, gt_img = in_text.to(device), gt_img.to(device)
-            pred = model(in_text)
+        for in_txt, gt_img in tqdm(val_loader, desc=f'Val, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
+            in_txt, gt_img = in_txt.to(device), gt_img.to(device)
+            pred = model(in_txt)
             pred = torch.clamp(pred, min=0.0, max=1.0)
             psnr.update(pred, gt_img)
 
             if do_once:
-                ascii_str = tensor_to_ascii(in_text[0].detach().cpu())
+                if hot_encode:
+                    ascii_str = one_hot_grid_to_ascii(in_txt[0].detach().cpu())
+                else:
+                    ascii_str = grid_to_ascii(in_txt[0].detach().cpu)
                 fig, axes = plt.subplots(1, 1, figsize=(3, 6))
                 axes.axis("off")
                 axes.text(
@@ -103,7 +110,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("CNN", model)
+    save_model("MLP", model)
 
 
 def main() -> None:
