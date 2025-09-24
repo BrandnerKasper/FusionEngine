@@ -8,10 +8,10 @@ class CNN(nn.Module):
         super().__init__()
         self.net = nn.Sequential(
             nn.Conv2d(in_cha, 32, 3, padding=1),
-            nn.BatchNorm2d(32),
+            # nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.Conv2d(32, 32, 3, padding=1),
-            nn.BatchNorm2d(32),
+            # nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.Conv2d(32, 3, 1),
             nn.Sigmoid()
