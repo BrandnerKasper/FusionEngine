@@ -9,9 +9,13 @@ class MLP(nn.Module):
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(32*32*in_cha, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(),
+            nn.Dropout(p=0.25),
             nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(),
+            nn.Dropout(p=0.25),
             nn.Linear(512, 32*32*3)
         )
 

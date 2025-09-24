@@ -33,7 +33,7 @@ def train() -> None:
     num_workers = 8
     learning_rate = 0.001
     epochs = 100
-    batch_size = 1
+    batch_size = 64
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fct = nn.L1Loss()
 
@@ -54,6 +54,7 @@ def train() -> None:
         total_loss = 0.0
 
         # Train
+        model.train()
         for in_txt, gt_img in tqdm(train_loader, desc=f'Training, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
             in_txt, gt_img = in_txt.to(device), gt_img.to(device)
 
@@ -75,11 +76,13 @@ def train() -> None:
         # Validation
         if (epoch+1) % 10 != 0:
             continue
+        model.eval()
         do_once = True
 
         for in_txt, gt_img in tqdm(val_loader, desc=f'Val, Epoch {epoch+1}/{epochs}', dynamic_ncols=True):
             in_txt, gt_img = in_txt.to(device), gt_img.to(device)
-            pred = model(in_txt)
+            with torch.inference_mode():
+                pred = model(in_txt)
             pred = torch.clamp(pred, min=0.0, max=1.0)
             psnr.update(pred, gt_img)
 
