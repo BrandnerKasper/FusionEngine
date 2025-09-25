@@ -97,9 +97,9 @@ class MLP(nn.Module):
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = MLP().to(device)
+    model = MLP(4).to(device)
     batch_size = 1
-    input_data = (batch_size, 32, 32)
+    input_data = (batch_size, 4, 32, 32)
 
     model.summary(input_data)
     model.measure_inference(input_data)

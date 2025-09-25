@@ -93,9 +93,9 @@ class CNN(nn.Module):
 def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = CNN().to(device)
+    model = CNN(4).to(device)
     batch_size = 1
-    input_data = (batch_size, 1, 32, 32)
+    input_data = (batch_size, 4, 32, 32)
 
     model.summary(input_data)
     model.measure_inference(input_data)
