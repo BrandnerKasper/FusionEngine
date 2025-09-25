@@ -15,7 +15,7 @@ def test() -> None:
     in_cha = 4 if hot_encode else 1
     model = CNN(in_cha).to(device)
 
-    state = torch.load("pretrained_models/CNN.pth", map_location=device)
+    state = torch.load("pretrained_models/CNN_W.pth", map_location=device)
     model.load_state_dict(state)
     model.eval()
 

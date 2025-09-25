@@ -117,7 +117,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("CNN_normalL1", model)
+    save_model("CNN", model)
 
 
 def main() -> None:

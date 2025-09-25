@@ -7,11 +7,11 @@ class CNN(nn.Module):
     def __init__(self, in_cha: int = 1):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv2d(in_cha, 32, 3, padding=1),
+            nn.Conv2d(in_cha, 32, 1, padding=0),
             # nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             # nn.Dropout2d(p=0.25),
-            nn.Conv2d(32, 32, 3, padding=1),
+            nn.Conv2d(32, 32, 1, padding=0),
             # nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             # nn.Dropout2d(p=0.25),
