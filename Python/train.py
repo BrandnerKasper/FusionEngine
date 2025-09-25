@@ -3,15 +3,15 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from torchmetrics import PeakSignalNoiseRatio
+from torchmetrics.image import PeakSignalNoiseRatio
 
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 from mlp import MLP
 from cnn import CNN
-from dataloader import ASCIISnake, grid_to_ascii
-from utility import one_hot_grid_to_ascii
+from dataloader import ASCIISnake
+from utility import grid_to_ascii, one_hot_grid_to_ascii
 
 torch.manual_seed(42)
 
@@ -33,7 +33,7 @@ def train() -> None:
     num_workers = 8
     learning_rate = 0.001
     epochs = 100
-    batch_size = 64
+    batch_size = 16
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fct = nn.L1Loss()
 
@@ -47,7 +47,7 @@ def train() -> None:
     writer = SummaryWriter()
 
     # Metrics
-    psnr = PeakSignalNoiseRatio().to(device)
+    psnr = PeakSignalNoiseRatio(data_range=(0.0, 1.0)).to(device)
 
     # Loop
     for epoch in tqdm(range(epochs), desc='Train', dynamic_ncols=True):
@@ -113,7 +113,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("CNN_Batch", model)
+    save_model("CNN", model)
 
 
 def main() -> None:
