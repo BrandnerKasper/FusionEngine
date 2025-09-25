@@ -4,12 +4,17 @@ cmake-build-*/
 .idea/
 # logs
 logs/
+
 # data for dataset classes
 data/
+
 # pytorch rocm
 libtorch/
 # trained models
 *.pt
+*.pth
+runs/
+
 # OpenGL context
 extern/
 /LearnOpenGL/assets/textures
