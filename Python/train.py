@@ -12,6 +12,7 @@ from mlp import MLP
 from cnn import CNN
 from dataloader import ASCIISnake
 from utility import grid_to_ascii, one_hot_grid_to_ascii
+from loss import WeightedL1Loss
 
 torch.manual_seed(42)
 
@@ -36,6 +37,9 @@ def train() -> None:
     batch_size = 16
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fct = nn.L1Loss()
+    # custom
+    # class_weights = [0.2, 1.0, 2.0, 3.0]
+    # loss_fct = WeightedL1Loss(class_weights).to(device)
 
     # Data
     train_dataset = ASCIISnake("data/train", 1000, hot_encode=hot_encode)
@@ -59,7 +63,7 @@ def train() -> None:
             in_txt, gt_img = in_txt.to(device), gt_img.to(device)
 
             pred = model(in_txt)
-            loss = loss_fct(pred, gt_img)
+            loss = loss_fct(pred, gt_img)#, in_txt)
 
             loss.backward()
             optimizer.step()
@@ -113,7 +117,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("CNN", model)
+    save_model("CNN_normalL1", model)
 
 
 def main() -> None:
