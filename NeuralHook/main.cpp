@@ -81,8 +81,13 @@ int main() {
     // make a single inference of the model
     torch::jit::script::Module model = torch::jit::load("pretrained_models/PNN_W.pt");
     model.eval();
+    torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
 
-    torch::Device device(torch::kCUDA);
+    if (torch::cuda::is_available())
+        std::cout << "CUDA available!" << std::endl;
+    else
+        std::cout << "CPU ONLY!" << std::endl;
+
     model.to(device);
     t = t.to(device);
 
