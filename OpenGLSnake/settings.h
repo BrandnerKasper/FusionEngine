@@ -24,6 +24,7 @@ namespace Settings {
     }
 
     namespace Data {
+        constexpr bool generate{false};
         constexpr int amount {1000};
     }
 }
