@@ -6,6 +6,8 @@
 #include <torch/torch.h>
 #include <torch/script.h>
 
+#include <format>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "extern/stb_image_write.h"
 
@@ -83,10 +85,8 @@ int main() {
     model.eval();
     torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
 
-    if (torch::cuda::is_available())
-        std::cout << "CUDA available!" << std::endl;
-    else
-        std::cout << "CPU ONLY!" << std::endl;
+    std::string a = torch::cuda::is_available() ? "YES" : "NO";
+    std::cout << std::format("CUDA available? {}", a) << std::endl;
 
     model.to(device);
     t = t.to(device);
