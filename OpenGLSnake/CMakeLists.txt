@@ -34,6 +34,10 @@ set(SOURCE_FILES main.cpp
         Renderer/RenderTexture.h
         ASCIIRenderer.cpp
         ASCIIRenderer.h
+        Neural/NeuralRenderer.cpp
+        Neural/NeuralRenderer.h
+        Neural/NeuralTexture.cpp
+        Neural/NeuralTexture.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
@@ -60,7 +64,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
-target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm)
+# TORCH GPU (ROCM)
+#set(Torch_DIR "${CMAKE_SOURCE_DIR}/extern/libtorch/share/cmake/Torch")
+#set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/extern/libtorch;/opt/rocm-6.3.0")
+#find_package(Torch REQUIRED)
+
+# TORCH CPU
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/extern/libtorch")
+find_package(Torch REQUIRED)
+
+target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm "${TORCH_LIBRARIES}")
 
 # define asset root
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

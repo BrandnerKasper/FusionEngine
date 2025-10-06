@@ -8,8 +8,11 @@ from torchmetrics.image import PeakSignalNoiseRatio
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+# nets
 from mlp import MLP
 from cnn import CNN
+from pnn import PNN
+
 from dataloader import ASCIISnake
 from utility import grid_to_ascii, one_hot_grid_to_ascii
 from loss import WeightedL1Loss
@@ -27,8 +30,9 @@ def train() -> None:
 
     hot_encode = True
     in_cha = 4 if hot_encode else 1
-    model = CNN(in_cha).to(device)
+    # model = CNN(in_cha).to(device)
     # model = MLP(in_cha).to(device)
+    model = PNN(in_cha).to(device)
 
     # Hyperparameters
     num_workers = 8
@@ -36,10 +40,10 @@ def train() -> None:
     epochs = 100
     batch_size = 16
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    loss_fct = nn.L1Loss()
+    # loss_fct = nn.L1Loss()
     # custom
-    # class_weights = [0.2, 1.0, 2.0, 3.0]
-    # loss_fct = WeightedL1Loss(class_weights).to(device)
+    class_weights = [0.2, 1.0, 2.0, 3.0]
+    loss_fct = WeightedL1Loss(class_weights).to(device)
 
     # Data
     train_dataset = ASCIISnake("data/train", 1000, hot_encode=hot_encode)
@@ -63,7 +67,7 @@ def train() -> None:
             in_txt, gt_img = in_txt.to(device), gt_img.to(device)
 
             pred = model(in_txt)
-            loss = loss_fct(pred, gt_img)#, in_txt)
+            loss = loss_fct(pred, gt_img, in_txt)
 
             loss.backward()
             optimizer.step()
@@ -117,7 +121,7 @@ def train() -> None:
 
     # End
     writer.close()
-    save_model("CNN", model)
+    save_model("PNN_W", model)
 
 
 def main() -> None:
