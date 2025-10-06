@@ -31,6 +31,6 @@ private:
             -1.f, 1.f, 0.f, 1.f
         }
     };
-    Shader m_present {"shaders/present.vert", "shaders/present.frag"};
+    Shader m_present {"shaders/neural.vert", "shaders/neural.frag"};
     int m_size;
 };
