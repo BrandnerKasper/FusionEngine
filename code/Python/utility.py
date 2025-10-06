@@ -1,10 +1,11 @@
 import torch
+import torch.nn as nn
 import cv2
 from torchvision import transforms
 import torch.nn.functional as F
+import torchinfo
 
-# Utility fct. to turn txt, img files into tensors and back
-
+# Data loading
 char_map = {
     ' ': 0,
     '#': 1,
@@ -51,3 +52,56 @@ def one_hot_grid_to_ascii(one_hot: torch.Tensor) -> str:
     ids = one_hot.argmax(dim=0)
     lines = [''.join(id_to_char.get(int(v), '?') for v in row) for row in ids.tolist()]
     return '\n'.join(lines)
+
+
+# Model
+def summary(model: nn.Module, input_size: tuple[int, int, int, int]):
+    torchinfo.summary(model, input_size)
+
+
+def measure_inference(model: nn.Module, input_size: tuple[int, int, int, int]):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+
+    model.to(device)
+    model.eval()
+    for k, v in model.named_parameters():
+        v.requires_grad = False
+
+    input_data = torch.randn(input_size).to(device)
+
+    print("Warm up ...")
+    with torch.no_grad():
+        for _ in range(10):
+            _ = model(input_data)
+
+    print("Start timing ...")
+    torch.cuda.synchronize()
+    iterations = 10
+    with torch.no_grad():
+        total = 0
+        for i in range(iterations):
+            start.record()
+            _ = model(input_data)
+            end.record()
+            torch.cuda.synchronize()
+            total += start.elapsed_time(end)
+    average = total / iterations
+    print(f"Average forward pass time {average:.2f} ms")
+
+
+def measure_vram_usage(model: nn.Module, input_size: tuple[int, int, int, int]):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
+    model.eval()
+    for k, v in model.named_parameters():
+        v.requires_grad = False
+
+    # Generate dummy input
+    input_data = torch.randn(input_size).to(device)
+
+    with torch.no_grad():
+        _ = model(input_data)
+    print("Memory allocated (peak):", torch.cuda.max_memory_allocated() / 1024 ** 2, "MB")
