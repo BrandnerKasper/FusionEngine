@@ -1,5 +1,5 @@
 import torch
-from pnn import PNN
+from models.pnn import PNN
 
 
 def main() -> None:

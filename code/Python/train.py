@@ -9,9 +9,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 # nets
-from mlp import MLP
-from cnn import CNN
-from pnn import PNN
+from models.pnn import PNN
 
 from dataloader import ASCIISnake
 from utility import grid_to_ascii, one_hot_grid_to_ascii

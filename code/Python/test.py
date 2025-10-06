@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from torchvision.transforms import functional as FV
 
-from cnn import CNN
+from models.pnn import PNN
 from dataloader import ASCIISnake
 from utility import grid_to_ascii, one_hot_grid_to_ascii
 
@@ -13,7 +13,7 @@ def test() -> None:
 
     hot_encode = True
     in_cha = 4 if hot_encode else 1
-    model = CNN(in_cha).to(device)
+    model = PNN(in_cha).to(device)
 
     state = torch.load("pretrained_models/CNN_W.pth", map_location=device)
     model.load_state_dict(state)
