@@ -7,9 +7,11 @@
 
 #include "settings.h"
 #include "Input.h"
-#include "Renderer/Renderer.h"
+// #include "Renderer/Renderer.h"
+#include "Neural/NeuralRenderer.h"
 #include "ASCIIRenderer.h"
 #include "Game/Game.h"
+
 
 class Application {
 public:
@@ -24,7 +26,8 @@ private:
     void update();
     void render();
     void terminalRender(std::string_view board) const;
-    void openGLRender(std::string_view board) const;
+    // void openGLRender(std::string_view board) const;
+    void neuralRender(std::string_view board) const;
     void genData();
 
 private:
@@ -38,12 +41,14 @@ private:
 
     Input m_input;
     Input::Action m_current_action{Input::Up};
-    std::unique_ptr<Renderer> m_renderer;
+    // std::unique_ptr<Renderer> m_renderer;
     std::unique_ptr<ASCIIRenderer> m_ascii_renderer;
+    std::unique_ptr<NeuralRenderer> m_neural_renderer;
 
     Game m_game;
     std::string board_state {};
     std::string prev_board_state {};
+    bool generate {Settings::Data::generate};
 
     double m_last_render {};
 };

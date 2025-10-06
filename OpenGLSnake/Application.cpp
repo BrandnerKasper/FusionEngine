@@ -6,8 +6,9 @@
 Application::Application() {
     init();
     Input::m_window = m_window;
-    m_renderer = std::make_unique<Renderer>(m_window);
+    // m_renderer = std::make_unique<Renderer>(m_window);
     m_ascii_renderer = std::make_unique<ASCIIRenderer>();
+    m_neural_renderer = std::make_unique<NeuralRenderer>(m_window);
 }
 
 Application::~Application() {
@@ -92,7 +93,8 @@ void Application::render() {
         terminalRender(board_state);
         m_last_render -= Settings::Render::frame_time;
     }
-    openGLRender(board_state);
+    // openGLRender(board_state);
+    neuralRender(board_state);
 }
 
 
@@ -100,18 +102,24 @@ void Application::terminalRender(const std::string_view board) const {
     m_ascii_renderer->draw(board);
 }
 
-void Application::openGLRender(const std::string_view board) const {
-    m_renderer->draw(board);
+// void Application::openGLRender(const std::string_view board) const {
+//     m_renderer->draw(board);
+// }
+
+void Application::neuralRender(const std::string_view board) const {
+    m_neural_renderer->draw(board);
 }
 
 void Application::genData() {
+    if (!generate)
+        return;
     static int count {};
     if (count == Settings::Data::amount)
         return;
     if (prev_board_state != board_state) {
         prev_board_state = board_state;
         m_ascii_renderer->generateData("in", count);
-        m_renderer->generateData("out", count);
+        // m_renderer->generateData("out", count);
         ++count;
     }
 }
