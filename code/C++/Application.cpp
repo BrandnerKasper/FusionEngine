@@ -16,7 +16,7 @@ Application::~Application() {
 }
 
 // OpenGL call backs
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
     glViewport(0, 0, width, height);
 }
 
@@ -110,6 +110,7 @@ void Application::neuralRender(const std::string_view board) const {
     m_neural_renderer->draw(board);
 }
 
+// TODO: Only generate data if we use the normal renderer
 void Application::genData() {
     if (!generate)
         return;

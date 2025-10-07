@@ -8,7 +8,7 @@ Player::Player() {
 
 void Player::init() {
     for (int i {0}; i < Settings::Game::body_length; ++i) {
-        body.push_back(Tile{{Settings::Game::start_position.first, Settings::Game::start_position.second - i}, Tile::Player});
+        body.push_back(Tile{{Settings::Game::board_size/2-1, Settings::Game::board_size/2-1 - i}, Tile::Player});
     }
 }
 

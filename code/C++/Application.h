@@ -32,8 +32,8 @@ private:
 
 private:
     GLFWwindow* m_window;
-    float m_width {Settings::Window::width};
-    float m_height {Settings::Window::height};
+    int m_width {Settings::Window::width};
+    int m_height {Settings::Window::height};
     std::string m_title{Settings::Window::title};
 
     // Delta time

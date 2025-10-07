@@ -12,7 +12,6 @@ struct Position {
 };
 
 struct Tile {
-
     enum Type {
         Empty,
         Wall,

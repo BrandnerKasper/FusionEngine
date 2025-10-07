@@ -28,8 +28,8 @@ struct Board {
     [[nodiscard]] std::string toString() const {
         std::string str {};
         int counter {0};
-        for (auto tile: data) {
-            str += std::to_string(tile.type);
+        for (auto [pos, type]: data) {
+            str += std::to_string(type);
             ++counter;
             if (counter % Settings::Game::board_size == 0)
                 str += "\n";
@@ -63,13 +63,4 @@ private:
     Board m_board {Settings::Game::board_size};
     Input::Action m_last_action {Input::Up};
     Player m_player {};
-
-    // for terminal render
-    // terminal ASCII
-    std::unordered_map<Tile::Type, std::string> ascii {
-            {Tile::Empty, " "},
-            {Tile::Wall, "#"},
-            {Tile::Player, "■"},
-            {Tile::Pellet, "▫"}
-    };
 };
