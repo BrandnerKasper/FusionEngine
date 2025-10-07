@@ -3,12 +3,16 @@
 #include <string>
 #include <string_view>
 
+#include "IRenderer.h"
 
-class ASCIIRenderer {
+
+class ASCIIRenderer : IRenderer {
 public:
     ASCIIRenderer() = default;
 
-    void draw(std::string_view board);
+    ~ASCIIRenderer() override = default;
+
+    void draw(std::string_view board) override;
     void generateData(std::string_view path, int count) const;
 
 private:

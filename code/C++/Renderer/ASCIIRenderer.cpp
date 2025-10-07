@@ -3,7 +3,7 @@
 #include <format>
 
 #include "ASCIIRenderer.h"
-#include "assets.h"
+#include "../assets.h"
 
 
 void ASCIIRenderer::draw(const std::string_view board) {

@@ -32,12 +32,13 @@ set(SOURCE_FILES main.cpp
         Renderer/Texture.h
         Renderer/RenderTexture.cpp
         Renderer/RenderTexture.h
-        ASCIIRenderer.cpp
-        ASCIIRenderer.h
-        Neural/NeuralRenderer.cpp
-        Neural/NeuralRenderer.h
-        Neural/NeuralTexture.cpp
-        Neural/NeuralTexture.h
+        Renderer/ASCIIRenderer.cpp
+        Renderer/ASCIIRenderer.h
+        Renderer/NeuralRenderer.cpp
+        Renderer/NeuralRenderer.h
+        Renderer/NeuralTexture.cpp
+        Renderer/NeuralTexture.h
+        Renderer/IRenderer.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

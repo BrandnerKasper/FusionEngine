@@ -9,6 +9,7 @@
 #include "NeuralTexture.h"
 #include "../settings.h"
 
+
 class NeuralRenderer {
 public:
     explicit NeuralRenderer(GLFWwindow* window);

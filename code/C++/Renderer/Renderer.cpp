@@ -5,8 +5,8 @@
 #include "../extern/stb_image_write.h"
 
 #include "Renderer.h"
-#include "../settings.h"
 #include "../assets.h"
+
 
 Renderer::Renderer(GLFWwindow* window)
     : m_window{window}{

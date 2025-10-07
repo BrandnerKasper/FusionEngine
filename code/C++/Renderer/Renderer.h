@@ -4,17 +4,19 @@
 #include <vector>
 #include <unordered_map>
 
+#include "IRenderer.h"
 #include "../settings.h"
 #include "Shader.h"
 #include "Sprite.h"
 #include "RenderTexture.h"
 
 
-class Renderer {
+class Renderer : IRenderer {
 public:
     explicit Renderer(GLFWwindow* window);
-    virtual ~Renderer();
-    void draw(std::string_view board);
+
+    ~Renderer() override;
+    void draw(std::string_view board) override;
     void generateData(std::string_view path, int count);
 
 private:

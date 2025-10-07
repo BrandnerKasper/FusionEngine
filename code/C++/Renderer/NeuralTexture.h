@@ -1,8 +1,8 @@
 #pragma once
 #include <torch/torch.h>
 
-#include "../Renderer/Shader.h"
-#include "../Renderer/Mesh.h"
+#include "Shader.h"
+#include "Mesh.h"
 
 
 class NeuralTexture {

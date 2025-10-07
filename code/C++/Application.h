@@ -8,8 +8,8 @@
 #include "settings.h"
 #include "Input.h"
 // #include "Renderer/Renderer.h"
-#include "Neural/NeuralRenderer.h"
-#include "ASCIIRenderer.h"
+#include "Renderer/NeuralRenderer.h"
+#include "Renderer/ASCIIRenderer.h"
 #include "Game/Game.h"
 
 
