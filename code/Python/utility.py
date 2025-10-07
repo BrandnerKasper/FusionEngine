@@ -2,16 +2,19 @@ import torch
 import torch.nn as nn
 import cv2
 from torchvision import transforms
+from torchvision.transforms import functional as FV
 import torch.nn.functional as F
 import torchinfo
+import matplotlib.pyplot as plt
 
-# Data loading
+# Data
 char_map = {
     ' ': 0,
     '#': 1,
     'o': 2,
     '•': 3
 }
+
 
 def load_txt(path: str) -> torch.Tensor:
     with open(f"{path}.txt", "r", encoding="utf-8") as file:
@@ -21,14 +24,15 @@ def load_txt(path: str) -> torch.Tensor:
 
 
 K = len(char_map)
+
+
 def load_txt_one_hot_encode(path: str) -> torch.Tensor:
     with open(f"{path}.txt", "r", encoding="utf-8") as file:
         lines = [line.rstrip("\n") for line in file]
     grid = [[char_map.get(c) for c in line] for line in lines]
     grid = torch.tensor(grid, dtype=torch.long)
-    one_hot = F.one_hot(grid, num_classes=K).permute(2, 0 , 1).to(torch.float32)
+    one_hot = F.one_hot(grid, num_classes=K).permute(2, 0, 1).to(torch.float32)
     return one_hot
-
 
 
 def load_img(path: str) -> torch.Tensor:
@@ -39,6 +43,7 @@ def load_img(path: str) -> torch.Tensor:
 
 
 id_to_char = {v: k for k, v in char_map.items()}
+
 
 def grid_to_ascii(grid: torch.Tensor) -> str:
     lines = []
@@ -52,6 +57,64 @@ def one_hot_grid_to_ascii(one_hot: torch.Tensor) -> str:
     ids = one_hot.argmax(dim=0)
     lines = [''.join(id_to_char.get(int(v), '?') for v in row) for row in ids.tolist()]
     return '\n'.join(lines)
+
+
+def plot_ascii_img(txt_t: torch.Tensor, img_t: torch.Tensor, hot_encode: bool) -> None:
+    ascii_str = one_hot_grid_to_ascii(txt_t) if hot_encode else grid_to_ascii(txt_t)
+    img = FV.to_pil_image(img_t)
+
+    fig, axes = plt.subplots(1, 2, figsize=(8, 6))
+
+    # Left: ASCII text
+    axes[0].axis("off")
+    axes[0].text(
+        0.5, 0.5,
+        ascii_str,
+        ha="center", va="center",
+        family="monospace",
+        fontsize=8
+    )
+    axes[0].set_title("ASCII Grid")
+
+    # Right: Image
+    axes[1].imshow(img)
+    axes[1].axis("off")
+    axes[1].set_title("Image")
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_ascii_pred_gt(txt_t: torch.Tensor, pred_t: torch.Tensor, gt_t: torch.Tensor, hot_encode: bool) -> None:
+    ascii_str = one_hot_grid_to_ascii(txt_t) if hot_encode else grid_to_ascii(txt_t)
+    pred_img = FV.to_pil_image(pred_t)
+    gt_img = FV.to_pil_image(gt_t)
+
+    fig, axes = plt.subplots(1, 3, figsize=(8, 9))
+
+    # Left: ASCII text
+    axes[0].axis("off")
+    axes[0].text(
+        0.5, 0.5,
+        ascii_str,
+        ha="center", va="center",
+        family="monospace",
+        fontsize=8
+    )
+    axes[0].set_title("ASCII Grid")
+
+    # Middle: Prediction image
+    axes[1].imshow(pred_img)
+    axes[1].axis("off")
+    axes[1].set_title("Prediction")
+
+    # Right: GT image
+    axes[2].imshow(gt_img)
+    axes[2].axis("off")
+    axes[2].set_title("GT")
+
+    plt.tight_layout()
+    plt.show()
 
 
 # Model
