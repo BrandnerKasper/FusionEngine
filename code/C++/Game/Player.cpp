@@ -12,21 +12,21 @@ void Player::init() {
     }
 }
 
-void Player::move(const Input::Action action) {
+void Player::move(const IInput::Action action) {
     auto head = body[0];
     tail_pos = head.pos;
 
     switch (action) {
-        case Input::Up:
+        case IInput::Up:
             head.pos.y += 1;
             break;
-        case Input::Left:
+        case IInput::Left:
             head.pos.x -= 1;
             break;
-        case Input::Down:
+        case IInput::Down:
             head.pos.y -= 1;
             break;
-        case Input::Right:
+        case IInput::Right:
             head.pos.x += 1;
             break;
         default:

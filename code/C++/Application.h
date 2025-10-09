@@ -1,12 +1,13 @@
 #pragma once
 
+// TODO get all OpenGL code out of the application class
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
 #include <string_view>
 
 #include "settings.h"
-#include "Input.h"
+#include "Input/IInput.h"
 // #include "Renderer/Renderer.h"
 #include "Renderer/NeuralRenderer.h"
 #include "Renderer/ASCIIRenderer.h"
@@ -16,7 +17,7 @@
 class Application {
 public:
     Application();
-    virtual ~Application();
+    virtual ~Application() = default;
 
     void run();
 
@@ -39,8 +40,10 @@ private:
     // Delta time
     double m_deltaTime {}, m_last_frame {};
 
-    Input m_input;
-    Input::Action m_current_action{Input::Up};
+    // Input m_input;
+    // Input::Action m_current_action{Input::Up};
+    std::unique_ptr<IInput> m_input;
+    IInput::Action m_current_action;
     // std::unique_ptr<Renderer> m_renderer;
     std::unique_ptr<ASCIIRenderer> m_ascii_renderer;
     std::unique_ptr<NeuralRenderer> m_neural_renderer;

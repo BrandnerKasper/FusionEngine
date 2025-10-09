@@ -2,17 +2,17 @@
 
 #include "Application.h"
 
+#include "Input/GLFWInput.h"
+#include "Input/TerminalInput.h"
+
 
 Application::Application() {
     init();
-    Input::m_window = m_window;
+    // TODO get the window and openGL code out of the application class
+    m_input = std::make_unique<GLFWInput>(m_window);
     // m_renderer = std::make_unique<Renderer>(m_window);
     m_ascii_renderer = std::make_unique<ASCIIRenderer>();
     m_neural_renderer = std::make_unique<NeuralRenderer>(m_window);
-}
-
-Application::~Application() {
-    Input::m_window = nullptr;
 }
 
 // OpenGL call backs
@@ -57,31 +57,17 @@ void Application::run() {
 }
 
 void Application::processInput() {
-    if (Input::pressed(Input::Quit))
-        glfwSetWindowShouldClose(m_window, true);
-    if (Input::pressed(Input::Pause))
-        m_current_action = Input::Pause;
-    // TODO EVENT SYSTEM to subscribe onto Input event
-    if (Input::pressed(Input::Up))
-        m_current_action = Input::Up;
-
-    if (Input::pressed(Input::Down))
-        m_current_action = Input::Down;
-
-    if (Input::pressed(Input::Left))
-        m_current_action = Input::Left;
-
-    if (Input::pressed(Input::Right))
-        m_current_action = Input::Right;
+    m_input->update();
+    m_current_action = m_input->getAction();
 }
 
 void Application::update() {
-    if (m_current_action == Input::Pause)
+    if (m_current_action == IInput::Pause)
         return;
     if (auto play = m_game.run(m_deltaTime, m_current_action))
         board_state = m_game.getBoardState();
     else {
-        m_current_action = Input::Up;
+        m_input->clear();
         m_game.reset();
     }
 }

@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "../settings.h"
-#include "../Input.h"
+#include "../Input/IInput.h"
 #include "Tile.h"
 #include "Player.h"
 
@@ -43,7 +43,7 @@ public:
     explicit Game();
     virtual ~Game() = default;
 
-    bool run(double deltaTime, Input::Action action);
+    bool run(double deltaTime, IInput::Action action);
 
     std::string getBoardState() const;
 
@@ -54,13 +54,13 @@ private:
     void update();
     void setPlayer();
     void generatePellet();
-    void validateAction(Input::Action action);
+    void validateAction(IInput::Action action);
 
 private:
     bool m_running {true};
     double m_lastUpdate{};
 
     Board m_board {Settings::Game::board_size};
-    Input::Action m_last_action {Input::Up};
+    IInput::Action m_last_action {IInput::Up};
     Player m_player {};
 };

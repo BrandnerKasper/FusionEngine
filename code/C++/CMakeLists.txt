@@ -12,8 +12,8 @@ set(SOURCE_FILES main.cpp
         Game/Game.cpp
         Renderer/Renderer.cpp
         Renderer/Renderer.h
-        Input.cpp
-        Input.h
+        Input/GLFWInput.cpp
+        Input/GLFWInput.h
         settings.h
         Application.cpp
         Application.h
@@ -39,6 +39,9 @@ set(SOURCE_FILES main.cpp
         Renderer/NeuralTexture.cpp
         Renderer/NeuralTexture.h
         Renderer/IRenderer.h
+        Input/IInput.h
+        Input/TerminalInput.cpp
+        Input/TerminalInput.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

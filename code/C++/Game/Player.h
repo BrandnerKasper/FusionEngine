@@ -3,14 +3,14 @@
 #include <optional>
 
 #include "Tile.h"
-#include "../Input.h"
+#include "../Input/IInput.h"
 
 
 class Player {
 public:
     Player();
 
-    void move(Input::Action action);
+    void move(IInput::Action action);
     void eat();
     void reset();
 

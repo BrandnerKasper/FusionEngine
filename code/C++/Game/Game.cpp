@@ -12,7 +12,7 @@ Game::Game(){
     generatePellet();
 }
 
-bool Game::run(const double deltaTime, const Input::Action action) {
+bool Game::run(const double deltaTime, const IInput::Action action) {
     m_lastUpdate += deltaTime;
     if (m_lastUpdate >= Settings::Game::tick) {
         validateAction(action);
@@ -102,23 +102,23 @@ void Game::generatePellet() {
     m_board(random_pos).type = Tile::Pellet;
 }
 
-void Game::validateAction(const Input::Action action) {
+void Game::validateAction(const IInput::Action action) {
     // Don't move into opposite dir
     switch (action) {
-        case Input::Up:
-            if (m_last_action == Input::Down)
+        case IInput::Up:
+            if (m_last_action == IInput::Down)
                 return;
             break;
-        case Input::Left:
-            if (m_last_action == Input::Right)
+        case IInput::Left:
+            if (m_last_action == IInput::Right)
                 return;
             break;
-        case Input::Right:
-            if (m_last_action == Input::Left)
+        case IInput::Right:
+            if (m_last_action == IInput::Left)
                 return;
             break;
-        case Input::Down:
-            if (m_last_action == Input::Up)
+        case IInput::Down:
+            if (m_last_action == IInput::Up)
                 return;
             break;
         default:
@@ -134,5 +134,5 @@ void Game::reset() {
     setPlayer();
     generatePellet();
     m_running = true;
-    m_last_action = Input::Up;
+    m_last_action = IInput::Up;
 }

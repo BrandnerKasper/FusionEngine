@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 
 namespace Settings {
+    // TODO: add keys for Input bindings;
+
     namespace Window {
         constexpr int width{512};
         constexpr int height{512};

@@ -17,3 +17,5 @@ namespace data {
         return fs::weakly_canonical(mergedPath);
     }
 }
+
+// TODO: add a namespace model or neural model
