@@ -3,16 +3,19 @@
 
 #include <GLFW/glfw3.h>
 
+#include "IInput.h"
 
-class Input {
+
+class GLFWInput final : public IInput{
 public:
-    enum Action {Quit, Up, Down, Left, Right, Pause};
+    explicit GLFWInput(GLFWwindow* window);
+    ~GLFWInput() override;
 
-    static bool pressed(Action a);
+    void update() override;
 
 private:
-    static inline GLFWwindow* m_window = nullptr;
-    static inline std::unordered_map<Action, int> m_bindings {
+    GLFWwindow* m_window = nullptr;
+    std::unordered_map<Action, int> m_bind {
             {Action::Quit,  GLFW_KEY_ESCAPE},
             {Action::Up,    GLFW_KEY_W},
             {Action::Left,  GLFW_KEY_A},
@@ -20,6 +23,4 @@ private:
             {Action::Right, GLFW_KEY_D},
             {Action::Pause, GLFW_KEY_P},
         };
-
-    friend class Application;
 };
