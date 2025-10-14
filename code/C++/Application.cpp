@@ -8,10 +8,9 @@
 
 Application::Application() {
     init();
-    // TODO get the window and openGL code out of the application class
-    m_input = std::make_unique<GLFWInput>(m_window);
-    // m_renderer = std::make_unique<Renderer>(m_window);
+    m_input = std::make_unique<GLFWInput>();
     m_ascii_renderer = std::make_unique<ASCIIRenderer>();
+    m_opengl_renderer = std::make_unique<OpenGLRenderer>(m_window);
     m_neural_renderer = std::make_unique<NeuralRenderer>(m_window);
 }
 
@@ -43,7 +42,7 @@ void Application::init() {
 }
 
 void Application::run() {
-    while(!glfwWindowShouldClose(m_window)) {
+    while(!glfwWindowShouldClose(m_window) && m_current_action != IInput::Quit) {
         // Delta Time
         const auto currentTime {glfwGetTime()};
         m_deltaTime = currentTime - m_last_frame;
@@ -88,9 +87,9 @@ void Application::terminalRender(const std::string_view board) const {
     m_ascii_renderer->draw(board);
 }
 
-// void Application::openGLRender(const std::string_view board) const {
-//     m_renderer->draw(board);
-// }
+void Application::openGLRender(const std::string_view board) const {
+    m_opengl_renderer->draw(board);
+}
 
 void Application::neuralRender(const std::string_view board) const {
     m_neural_renderer->draw(board);
@@ -105,7 +104,7 @@ void Application::genData() {
         return;
     if (prev_board_state != board_state) {
         prev_board_state = board_state;
-        m_ascii_renderer->generateData("in", count);
+        // m_ascii_renderer->generateData("in", count);
         // m_renderer->generateData("out", count);
         ++count;
     }

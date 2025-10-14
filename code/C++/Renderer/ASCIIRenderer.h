@@ -6,13 +6,13 @@
 #include "IRenderer.h"
 
 
-class ASCIIRenderer : IRenderer {
+class ASCIIRenderer final {
 public:
     ASCIIRenderer() = default;
 
-    ~ASCIIRenderer() override = default;
+    ~ASCIIRenderer() = default;
 
-    void draw(std::string_view board) override;
+    void draw(std::string_view board);
     void generateData(std::string_view path, int count) const;
 
 private:

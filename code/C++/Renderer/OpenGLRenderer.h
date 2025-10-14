@@ -4,18 +4,18 @@
 #include <vector>
 #include <unordered_map>
 
+#include "FrameBuffer.h"
 #include "IRenderer.h"
 #include "../settings.h"
 #include "Shader.h"
 #include "Sprite.h"
-#include "RenderTexture.h"
 
 
-class Renderer : IRenderer {
+class OpenGLRenderer final : public IRenderer {
 public:
-    explicit Renderer(GLFWwindow* window);
+    explicit OpenGLRenderer(GLFWwindow* window);
 
-    ~Renderer() override;
+    ~OpenGLRenderer() override;
     void draw(std::string_view board) override;
     void generateData(std::string_view path, int count);
 
@@ -31,7 +31,7 @@ private:
 
     std::vector<Sprite> m_sprites;
 
-    RenderTexture m_render_texture {Settings::Game::board_size * Settings::Render::tile_size};
+    FrameBuffer m_render_texture {Settings::Game::board_size * Settings::Render::tile_size, "shaders/present.vert", "shaders/present.frag"};
 
     std::unordered_map<char, std::string_view> color_map {
         {'0', {"#222222"}},

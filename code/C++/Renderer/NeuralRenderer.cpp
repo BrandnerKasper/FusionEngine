@@ -58,13 +58,14 @@ NeuralRenderer::~NeuralRenderer() {
 
 void NeuralRenderer::draw(const std::string_view board) {
     auto pred = inference(std::string(board));
-    m_neural_texture.uploadTensor(pred);
+    m_neural_texture.setData(pred.data_ptr<unsigned char>(), pred.size(0), pred.size(1));
 
     glDisable(GL_DEPTH_TEST);
 
     int winW, winH;
     glfwGetFramebufferSize(m_window, &winW, &winH);
-    m_neural_texture.setView(winW, winH);
+    glViewport(0, 0, winW, winH);
+    m_neural_texture.unbind();
     glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     m_neural_texture.draw();

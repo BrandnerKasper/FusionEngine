@@ -8,9 +8,9 @@
 
 #include "settings.h"
 #include "Input/IInput.h"
-// #include "Renderer/Renderer.h"
-#include "Renderer/NeuralRenderer.h"
 #include "Renderer/ASCIIRenderer.h"
+#include "Renderer/OpenGLRenderer.h"
+#include "Renderer/NeuralRenderer.h"
 #include "Game/Game.h"
 
 
@@ -27,7 +27,7 @@ private:
     void update();
     void render();
     void terminalRender(std::string_view board) const;
-    // void openGLRender(std::string_view board) const;
+    void openGLRender(std::string_view board) const;
     void neuralRender(std::string_view board) const;
     void genData();
 
@@ -40,11 +40,9 @@ private:
     // Delta time
     double m_deltaTime {}, m_last_frame {};
 
-    // Input m_input;
-    // Input::Action m_current_action{Input::Up};
     std::unique_ptr<IInput> m_input;
-    IInput::Action m_current_action;
-    // std::unique_ptr<Renderer> m_renderer;
+    IInput::Action m_current_action {IInput::Pause};
+    std::unique_ptr<IRenderer> m_opengl_renderer;
     std::unique_ptr<ASCIIRenderer> m_ascii_renderer;
     std::unique_ptr<NeuralRenderer> m_neural_renderer;
 
