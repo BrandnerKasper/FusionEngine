@@ -1,7 +1,7 @@
 #pragma once
 
 struct IInput {
-    enum Action {Quit, Up, Down, Left, Right, Pause};
+    enum Action {Quit, Up, Down, Left, Right, Pause, Switch};
 
     virtual ~IInput() = default;
 

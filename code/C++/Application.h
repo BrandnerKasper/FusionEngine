@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
-#include <string_view>
 #include <memory>
 
 #include "settings.h"
@@ -25,12 +24,13 @@ private:
     void processInput();
     void update();
     void render();
-    void terminalRender(std::string_view board) const;
-    void openGLRender(std::string_view board) const;
-    void neuralRender(std::string_view board) const;
     void genData();
 
+    void switchRenderer();
+    void setWindowTitle(const std::string& sub) const;
+
 private:
+    // Window
     GLFWwindow* m_window;
     int m_width {Settings::Window::width};
     int m_height {Settings::Window::height};
@@ -39,16 +39,21 @@ private:
     // Delta time
     double m_deltaTime {}, m_last_frame {};
 
+    // Input
     std::unique_ptr<IInput> m_input;
     IInput::Action m_current_action {IInput::Pause};
-    std::unique_ptr<IRenderer> m_opengl_renderer;
-    std::unique_ptr<IRenderer> m_ascii_renderer;
-    std::unique_ptr<IRenderer> m_neural_renderer;
+    IInput::Action m_prev_action {};
 
+    // Rendering
+    std::unordered_map<std::string, std::unique_ptr<IRenderer>> m_renderer_map;
+    std::string m_curr_renderer {"OpenGL"};
+    double m_last_render {};
+
+    // Game
     Game m_game;
     std::string board_state {};
     std::string prev_board_state {};
-    bool generate {Settings::Data::generate};
 
-    double m_last_render {};
+    // Data
+    bool m_generate {Settings::Data::generate};
 };

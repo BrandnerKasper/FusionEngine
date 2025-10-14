@@ -12,9 +12,9 @@
 Application::Application() {
     initWindow();
     m_input = std::make_unique<GLFWInput>(m_window);
-    m_ascii_renderer = std::make_unique<ASCIIRenderer>();
-    m_opengl_renderer = std::make_unique<OpenGLRenderer>(m_window);
-    m_neural_renderer = std::make_unique<NeuralRenderer>(m_window);
+    m_renderer_map.emplace("ASCII", std::make_unique<ASCIIRenderer>());
+    m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window));
+    m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window));
 }
 
 // OpenGL call backs
@@ -32,7 +32,7 @@ void Application::initWindow() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create our first window
-    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(m_width, m_height, (m_title+" - OpenGL").c_str(), nullptr, nullptr);
     if(m_window == nullptr)
         throw std::runtime_error("Failed to create GLFW window!");
 
@@ -54,11 +54,13 @@ void Application::run() {
         processInput();
         update();
         render();
-        genData();
+        if (m_generate)
+            genData();
     }
 }
 
 void Application::processInput() {
+    m_prev_action = m_current_action;
     m_input->update();
     m_current_action = m_input->getAction();
 }
@@ -66,6 +68,10 @@ void Application::processInput() {
 void Application::update() {
     if (m_current_action == IInput::Pause)
         return;
+    if (m_current_action == IInput::Switch) {
+        switchRenderer();
+        m_current_action = m_prev_action;
+    }
     if (auto play = m_game.run(m_deltaTime, m_current_action))
         board_state = m_game.getBoardState();
     else {
@@ -78,37 +84,34 @@ void Application::render() {
     // Terminal render
     m_last_render += m_deltaTime;
     if (m_last_render >= Settings::Render::frame_time) {
-        terminalRender(board_state);
+        m_renderer_map["ASCII"]->draw(board_state);
         m_last_render -= Settings::Render::frame_time;
     }
-    // openGLRender(board_state);
-    neuralRender(board_state);
+    m_renderer_map[m_curr_renderer]->draw(board_state);
 }
 
-
-void Application::terminalRender(const std::string_view board) const {
-    m_ascii_renderer->draw(board);
-}
-
-void Application::openGLRender(const std::string_view board) const {
-    m_opengl_renderer->draw(board);
-}
-
-void Application::neuralRender(const std::string_view board) const {
-    m_neural_renderer->draw(board);
-}
-
-// TODO: Only generate data if we use the normal renderer
 void Application::genData() {
-    if (!generate)
-        return;
     static int count {};
     if (count == Settings::Data::amount)
         return;
     if (prev_board_state != board_state) {
         prev_board_state = board_state;
-        // m_ascii_renderer->generateData("in", count);
-        // m_renderer->generateData("out", count);
+        for (auto& [name, renderer]: m_renderer_map) {
+            renderer->generateData(name, count);
+        }
         ++count;
     }
+}
+
+void Application::switchRenderer() {
+    if (m_curr_renderer == "OpenGL")
+        m_curr_renderer = "Neural";
+    else
+        m_curr_renderer = "OpenGL";
+    setWindowTitle(m_curr_renderer);
+}
+
+void Application::setWindowTitle(const std::string& sub) const {
+    const auto t = m_title + " - " + sub;
+    glfwSetWindowTitle(m_window, t.c_str());
 }
