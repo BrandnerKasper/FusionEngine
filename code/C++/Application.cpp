@@ -8,7 +8,7 @@
 
 Application::Application() {
     init();
-    m_input = std::make_unique<GLFWInput>();
+    m_input = std::make_unique<GLFWInput>(m_window);
     m_ascii_renderer = std::make_unique<ASCIIRenderer>();
     m_opengl_renderer = std::make_unique<OpenGLRenderer>(m_window);
     m_neural_renderer = std::make_unique<NeuralRenderer>(m_window);

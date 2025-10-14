@@ -7,7 +7,7 @@ struct IInput {
 
     virtual void update() = 0;
     [[nodiscard]] virtual bool pressed(const Action a) const {return m_curr == a;}
-    virtual Action getAction() const {return m_curr;}
+    [[nodiscard]] virtual Action getAction() const {return m_curr;}
     virtual void clear() {m_curr = Up;}
 
 protected:

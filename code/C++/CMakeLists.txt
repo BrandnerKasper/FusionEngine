@@ -10,8 +10,8 @@ set(EXE_FILE Fusion)
 set(SOURCE_FILES main.cpp
         Game/Game.h
         Game/Game.cpp
-        Renderer/Renderer.cpp
-        Renderer/Renderer.h
+        Renderer/OpenGLRenderer.cpp
+        Renderer/OpenGLRenderer.h
         Input/GLFWInput.cpp
         Input/GLFWInput.h
         settings.h
@@ -30,18 +30,17 @@ set(SOURCE_FILES main.cpp
         Renderer/Sprite.h
         Renderer/Texture.cpp
         Renderer/Texture.h
-        Renderer/RenderTexture.cpp
-        Renderer/RenderTexture.h
         Renderer/ASCIIRenderer.cpp
         Renderer/ASCIIRenderer.h
         Renderer/NeuralRenderer.cpp
         Renderer/NeuralRenderer.h
-        Renderer/NeuralTexture.cpp
-        Renderer/NeuralTexture.h
         Renderer/IRenderer.h
         Input/IInput.h
         Input/TerminalInput.cpp
         Input/TerminalInput.h
+        Input/TerminalInput.h
+        Renderer/FrameBuffer.cpp
+        Renderer/FrameBuffer.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
