@@ -30,7 +30,7 @@ OpenGLRenderer::~OpenGLRenderer() {
 void OpenGLRenderer::draw(const std::string_view board) {
     updateSprites(board);
 
-    glViewport(0, 0, 32, 32);
+    glViewport(0, 0, m_size, m_size);
     m_render_texture.bind();
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.f, 0.f, 0.f, 1.0f);

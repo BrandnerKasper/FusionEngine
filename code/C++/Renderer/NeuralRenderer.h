@@ -7,13 +7,14 @@
 
 #include "../settings.h"
 #include "FrameBuffer.h"
+#include "IRenderer.h"
 
 
-class NeuralRenderer {
+class NeuralRenderer final : public IRenderer {
 public:
     explicit NeuralRenderer(GLFWwindow* window);
-    virtual ~NeuralRenderer();
-    void draw(std::string_view board);
+    ~NeuralRenderer() override;
+    void draw(std::string_view board) override;
 
 private:
     void init();

@@ -5,12 +5,11 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include <string_view>
+#include <memory>
 
 #include "settings.h"
 #include "Input/IInput.h"
-#include "Renderer/ASCIIRenderer.h"
-#include "Renderer/OpenGLRenderer.h"
-#include "Renderer/NeuralRenderer.h"
+#include "Renderer/IRenderer.h"
 #include "Game/Game.h"
 
 
@@ -22,7 +21,7 @@ public:
     void run();
 
 private:
-    void init();
+    void initWindow();
     void processInput();
     void update();
     void render();
@@ -43,8 +42,8 @@ private:
     std::unique_ptr<IInput> m_input;
     IInput::Action m_current_action {IInput::Pause};
     std::unique_ptr<IRenderer> m_opengl_renderer;
-    std::unique_ptr<ASCIIRenderer> m_ascii_renderer;
-    std::unique_ptr<NeuralRenderer> m_neural_renderer;
+    std::unique_ptr<IRenderer> m_ascii_renderer;
+    std::unique_ptr<IRenderer> m_neural_renderer;
 
     Game m_game;
     std::string board_state {};

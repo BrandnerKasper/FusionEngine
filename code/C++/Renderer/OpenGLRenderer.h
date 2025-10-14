@@ -14,10 +14,9 @@
 class OpenGLRenderer final : public IRenderer {
 public:
     explicit OpenGLRenderer(GLFWwindow* window);
-
     ~OpenGLRenderer() override;
     void draw(std::string_view board) override;
-    void generateData(std::string_view path, int count);
+    void generateData(std::string_view path, int count) override;
 
 private:
     void init();
@@ -31,7 +30,8 @@ private:
 
     std::vector<Sprite> m_sprites;
 
-    FrameBuffer m_render_texture {Settings::Game::board_size * Settings::Render::tile_size, "shaders/present.vert", "shaders/present.frag"};
+    int m_size {Settings::Game::board_size * Settings::Render::tile_size};
+    FrameBuffer m_render_texture {m_size, "shaders/present.vert", "shaders/present.frag"};
 
     std::unordered_map<char, std::string_view> color_map {
         {'0', {"#222222"}},

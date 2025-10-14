@@ -4,10 +4,13 @@
 
 #include "Input/GLFWInput.h"
 #include "Input/TerminalInput.h"
+#include "Renderer/ASCIIRenderer.h"
+#include "Renderer/OpenGLRenderer.h"
+#include "Renderer/NeuralRenderer.h"
 
 
 Application::Application() {
-    init();
+    initWindow();
     m_input = std::make_unique<GLFWInput>(m_window);
     m_ascii_renderer = std::make_unique<ASCIIRenderer>();
     m_opengl_renderer = std::make_unique<OpenGLRenderer>(m_window);
@@ -19,7 +22,7 @@ void framebuffer_size_callback(GLFWwindow* window, const int width, const int he
     glViewport(0, 0, width, height);
 }
 
-void Application::init() {
+void Application::initWindow() {
     glfwInit();
 
     // Define OpenGL version (4.6)

@@ -1,19 +1,18 @@
 #pragma once
 #include <unordered_map>
 #include <string>
-#include <string_view>
 
 #include "IRenderer.h"
 
 
-class ASCIIRenderer final {
+class ASCIIRenderer final : public IRenderer {
 public:
     ASCIIRenderer() = default;
 
-    ~ASCIIRenderer() = default;
+    ~ASCIIRenderer() override = default;
 
-    void draw(std::string_view board);
-    void generateData(std::string_view path, int count) const;
+    void draw(std::string_view board) override;
+    void generateData(std::string_view path, int count) override;
 
 private:
     void create(std::string_view board);
