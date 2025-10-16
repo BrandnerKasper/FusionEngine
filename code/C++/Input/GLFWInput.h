@@ -5,7 +5,6 @@
 #include "IInput.h"
 
 
-
 class GLFWInput final : public IInput{
 public:
     explicit GLFWInput(GLFWwindow* window);

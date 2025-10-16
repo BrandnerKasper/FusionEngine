@@ -13,10 +13,10 @@
 Application::Application() {
     // initWindow();
     m_window = std::make_unique<GLFWWindow>();
-    m_input = std::make_unique<GLFWInput>(m_window->get());
+    m_input = std::make_unique<GLFWInput>(m_window->handleAs<GLFWwindow>());
     m_renderer_map.emplace("ASCII", std::make_unique<ASCIIRenderer>());
-    m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window->get()));
-    m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window->get()));
+    m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window->handleAs<GLFWwindow>()));
+    m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window->handleAs<GLFWwindow>()));
 }
 
 void Application::run() {

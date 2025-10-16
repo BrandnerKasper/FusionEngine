@@ -44,6 +44,7 @@ set(SOURCE_FILES main.cpp
         Window/IWindow.h
         Window/GLFWWindow.cpp
         Window/GLFWWindow.h
+        Window/safg.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

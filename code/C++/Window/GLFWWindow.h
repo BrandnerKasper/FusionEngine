@@ -7,20 +7,20 @@
 #include "../settings.h"
 
 
-class GLFWWindow {
+class GLFWWindow final : public IWindow {
 public:
     GLFWWindow();
-    virtual ~GLFWWindow();
 
-    [[nodiscard]] GLFWwindow* get() const {return m_window;}
-    void setTitle(const std::string& t) const;
-    bool shouldClose() const;
+    ~GLFWWindow() override;
+
+    [[nodiscard]] void* get() const override {return m_window;}
+    void setTitle(const std::string& t) const override;
+    bool shouldClose() const override;
 
 private:
     void init();
 
 private:
-    // Window
     GLFWwindow* m_window;
     int m_width {Settings::Window::width};
     int m_height {Settings::Window::height};

@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "settings.h"
-#include "Window/GLFWWindow.h"
+#include "Window/IWindow.h"
 #include "Input/IInput.h"
 #include "Renderer/IRenderer.h"
 #include "Game/Game.h"
@@ -25,7 +25,7 @@ private:
 
 private:
     // Window
-    std::unique_ptr<GLFWWindow> m_window;
+    std::unique_ptr<IWindow> m_window;
 
     // Delta time
     double m_deltaTime {}, m_last_frame {};
