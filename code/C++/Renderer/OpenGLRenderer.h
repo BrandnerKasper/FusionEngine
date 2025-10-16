@@ -15,6 +15,7 @@ class OpenGLRenderer final : public IRenderer {
 public:
     explicit OpenGLRenderer(GLFWwindow* window);
     ~OpenGLRenderer() override;
+
     void draw(std::string_view board) override;
     void generateData(std::string_view path, int count) override;
 

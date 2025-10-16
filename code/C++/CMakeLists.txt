@@ -41,6 +41,9 @@ set(SOURCE_FILES main.cpp
         Input/TerminalInput.h
         Renderer/FrameBuffer.cpp
         Renderer/FrameBuffer.h
+        Window/IWindow.h
+        Window/GLFWWindow.cpp
+        Window/GLFWWindow.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})

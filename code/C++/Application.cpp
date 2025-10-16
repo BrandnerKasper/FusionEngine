@@ -2,6 +2,7 @@
 
 #include "Application.h"
 
+#include "Window/GLFWWindow.h"
 #include "Input/GLFWInput.h"
 #include "Input/TerminalInput.h"
 #include "Renderer/ASCIIRenderer.h"
@@ -10,42 +11,16 @@
 
 
 Application::Application() {
-    initWindow();
-    m_input = std::make_unique<GLFWInput>(m_window);
+    // initWindow();
+    m_window = std::make_unique<GLFWWindow>();
+    m_input = std::make_unique<GLFWInput>(m_window->get());
     m_renderer_map.emplace("ASCII", std::make_unique<ASCIIRenderer>());
-    m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window));
-    m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window));
-}
-
-// OpenGL call backs
-void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
-    glViewport(0, 0, width, height);
-}
-
-void Application::initWindow() {
-    glfwInit();
-
-    // Define OpenGL version (4.6)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // Create our first window
-    m_window = glfwCreateWindow(m_width, m_height, (m_title+" - OpenGL").c_str(), nullptr, nullptr);
-    if(m_window == nullptr)
-        throw std::runtime_error("Failed to create GLFW window!");
-
-    glfwMakeContextCurrent(m_window);
-    glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
-    if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-        throw std::runtime_error("Failed to initialize GLAD");
-    // Depth testing
-    glEnable(GL_DEPTH_TEST);
+    m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window->get()));
+    m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window->get()));
 }
 
 void Application::run() {
-    while(!glfwWindowShouldClose(m_window) && m_current_action != IInput::Quit) {
+    while(m_window->shouldClose() && m_current_action != IInput::Quit) {
         // Delta Time
         const auto currentTime {glfwGetTime()};
         m_deltaTime = currentTime - m_last_frame;
@@ -87,6 +62,7 @@ void Application::render() {
         m_renderer_map["ASCII"]->draw(board_state);
         m_last_render -= Settings::Render::frame_time;
     }
+    // Either OpenGL or Neural Renderer
     m_renderer_map[m_curr_renderer]->draw(board_state);
 }
 
@@ -108,10 +84,6 @@ void Application::switchRenderer() {
         m_curr_renderer = "Neural";
     else
         m_curr_renderer = "OpenGL";
-    setWindowTitle(m_curr_renderer);
+    m_window->setTitle(m_curr_renderer);
 }
 
-void Application::setWindowTitle(const std::string& sub) const {
-    const auto t = m_title + " - " + sub;
-    glfwSetWindowTitle(m_window, t.c_str());
-}

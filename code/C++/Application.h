@@ -1,12 +1,9 @@
 #pragma once
-
-// TODO get all OpenGL code out of the application class
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <string>
 #include <memory>
 
 #include "settings.h"
+#include "Window/GLFWWindow.h"
 #include "Input/IInput.h"
 #include "Renderer/IRenderer.h"
 #include "Game/Game.h"
@@ -20,21 +17,15 @@ public:
     void run();
 
 private:
-    void initWindow();
     void processInput();
     void update();
     void render();
     void genData();
-
     void switchRenderer();
-    void setWindowTitle(const std::string& sub) const;
 
 private:
     // Window
-    GLFWwindow* m_window;
-    int m_width {Settings::Window::width};
-    int m_height {Settings::Window::height};
-    std::string m_title{Settings::Window::title};
+    std::unique_ptr<GLFWWindow> m_window;
 
     // Delta time
     double m_deltaTime {}, m_last_frame {};
