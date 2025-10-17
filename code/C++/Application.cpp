@@ -52,7 +52,7 @@ void Application::update() {
         board_state = m_game->getBoardState();
     else {
         m_input->clear();
-        m_game.reset();
+        m_game->reset();
     }
 }
 
