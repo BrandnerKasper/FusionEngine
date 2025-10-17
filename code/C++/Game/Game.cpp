@@ -122,7 +122,7 @@ void Game::validateAction(const IInput::Action action) {
                 return;
             break;
         default:
-            std::cerr << "Should not come to this!" << std::endl;
+            std::cerr << "Validated Input Action that Game can not handle:" << action << std::endl;
             break;
     }
     m_last_action = action;

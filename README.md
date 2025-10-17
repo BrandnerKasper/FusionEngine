@@ -37,4 +37,4 @@ A TODO list follows.
 - [x] Write a renderer in OpenGL/Vulcan to visualize the game differently
 - [x] Generate a dataset of ASCII to PNG (for now small!)
 - [x] Find a suitable neural network architecture
-- [ ] Hook the trained neural network into the cpp application and actually play via a neural engine!
+- [x] Hook the trained neural network into the cpp application and actually play via a neural engine!
