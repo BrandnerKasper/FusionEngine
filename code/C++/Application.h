@@ -33,15 +33,14 @@ private:
     // Input
     std::unique_ptr<IInput> m_input;
     IInput::Action m_current_action {IInput::Pause};
-    IInput::Action m_prev_action {};
 
     // Rendering
     std::unordered_map<std::string, std::unique_ptr<IRenderer>> m_renderer_map;
-    std::string m_curr_renderer {"OpenGL"};
+    std::string m_curr_renderer {Settings::Render::curr_Renderer};
     double m_last_render {};
 
     // Game
-    Game m_game;
+    std::unique_ptr<Game> m_game;
     std::string board_state {};
     std::string prev_board_state {};
 

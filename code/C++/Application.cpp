@@ -11,12 +11,12 @@
 
 
 Application::Application() {
-    // initWindow();
-    m_window = std::make_unique<GLFWWindow>();
+    m_window = std::make_unique<GLFWWindow>(m_curr_renderer);
     m_input = std::make_unique<GLFWInput>(m_window->handleAs<GLFWwindow>());
     m_renderer_map.emplace("ASCII", std::make_unique<ASCIIRenderer>());
     m_renderer_map.emplace("OpenGL", std::make_unique<OpenGLRenderer>(m_window->handleAs<GLFWwindow>()));
     m_renderer_map.emplace("Neural", std::make_unique<NeuralRenderer>(m_window->handleAs<GLFWwindow>()));
+    m_game = std::make_unique<Game>();
 }
 
 void Application::run() {
@@ -35,7 +35,7 @@ void Application::run() {
 }
 
 void Application::processInput() {
-    m_prev_action = m_current_action;
+    // TODO: add Event System to handle one press inputs
     m_input->update();
     m_current_action = m_input->getAction();
 }
@@ -45,10 +45,11 @@ void Application::update() {
         return;
     if (m_current_action == IInput::Switch) {
         switchRenderer();
-        m_current_action = m_prev_action;
+        m_current_action = IInput::Pause;
+        return;
     }
-    if (auto play = m_game.run(m_deltaTime, m_current_action))
-        board_state = m_game.getBoardState();
+    if (auto play = m_game->run(m_deltaTime, m_current_action))
+        board_state = m_game->getBoardState();
     else {
         m_input->clear();
         m_game.reset();

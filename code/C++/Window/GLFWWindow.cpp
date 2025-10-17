@@ -3,22 +3,9 @@
 #include "GLFWWindow.h"
 
 
-GLFWWindow::GLFWWindow() {
+GLFWWindow::GLFWWindow(const std::string& renderer_name) {
     init();
-}
-
-GLFWWindow::~GLFWWindow() {
-    glfwDestroyWindow(m_window);
-    glfwTerminate();
-}
-
-void GLFWWindow::setTitle(const std::string &t) const {
-    const auto title = m_title + " - " + t;
-    glfwSetWindowTitle(m_window, title.c_str());
-}
-
-bool GLFWWindow::shouldClose() const {
-    return !glfwWindowShouldClose(m_window);
+    setTitle(renderer_name);
 }
 
 // OpenGL call backs
@@ -46,4 +33,18 @@ void GLFWWindow::init() {
         throw std::runtime_error("Failed to initialize GLAD");
     // Depth testing
     glEnable(GL_DEPTH_TEST);
+}
+
+GLFWWindow::~GLFWWindow() {
+    glfwDestroyWindow(m_window);
+    glfwTerminate();
+}
+
+bool GLFWWindow::shouldClose() const {
+    return !glfwWindowShouldClose(m_window);
+}
+
+void GLFWWindow::setTitle(const std::string &t) const {
+    const auto title = m_title + " - " + t;
+    glfwSetWindowTitle(m_window, title.c_str());
 }

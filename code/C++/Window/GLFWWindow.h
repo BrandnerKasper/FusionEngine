@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <string_view>
 
 #include "IWindow.h"
 #include "../settings.h"
@@ -9,13 +10,12 @@
 
 class GLFWWindow final : public IWindow {
 public:
-    GLFWWindow();
-
+    explicit GLFWWindow(const std::string& renderer_name);
     ~GLFWWindow() override;
 
     [[nodiscard]] void* get() const override {return m_window;}
+    [[nodiscard]] bool shouldClose() const override;
     void setTitle(const std::string& t) const override;
-    bool shouldClose() const override;
 
 private:
     void init();
