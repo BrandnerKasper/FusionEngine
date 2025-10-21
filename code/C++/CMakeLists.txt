@@ -7,48 +7,42 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(EXE_FILE Fusion)
 
-set(SOURCE_FILES main.cpp
-        Game/Game.h
-        Game/Game.cpp
-        Renderer/OpenGLRenderer.cpp
-        Renderer/OpenGLRenderer.h
-        Input/GLFWInput.cpp
-        Input/GLFWInput.h
-        settings.h
-        Application.cpp
-        Application.h
-        Renderer/Shader.cpp
-        Renderer/Shader.h
-        assets.h
-        Renderer/Mesh.cpp
-        Renderer/Mesh.h
+# ------------------------------------------------------------------------------
+# Sources
+# ------------------------------------------------------------------------------
+set(SOURCE_FILES
+        main.cpp
+        Application.cpp              Application.h
+        settings.h                   assets.h
         random.h
-        Game/Player.cpp
-        Game/Player.h
-        Game/Tile.h
-        Renderer/Sprite.cpp
-        Renderer/Sprite.h
-        Renderer/Texture.cpp
-        Renderer/Texture.h
-        Renderer/ASCIIRenderer.cpp
-        Renderer/ASCIIRenderer.h
-        Renderer/NeuralRenderer.cpp
-        Renderer/NeuralRenderer.h
-        Renderer/IRenderer.h
+
+        Window/IWindow.h             Window/GLFWWindow.cpp   Window/GLFWWindow.h
+
         Input/IInput.h
-        Input/TerminalInput.cpp
-        Input/TerminalInput.h
-        Input/TerminalInput.h
-        Renderer/FrameBuffer.cpp
-        Renderer/FrameBuffer.h
-        Window/IWindow.h
-        Window/GLFWWindow.cpp
-        Window/GLFWWindow.h
+        Input/GLFWInput.cpp          Input/GLFWInput.h
+        Input/TerminalInput.cpp      Input/TerminalInput.h
+
+        Renderer/IRenderer.h
+        Renderer/OpenGLRenderer.cpp  Renderer/OpenGLRenderer.h
+        Renderer/ASCIIRenderer.cpp   Renderer/ASCIIRenderer.h
+        Renderer/NeuralRenderer.cpp  Renderer/NeuralRenderer.h
+        Renderer/Shader.cpp          Renderer/Shader.h
+        Renderer/Mesh.cpp            Renderer/Mesh.h
+        Renderer/Sprite.cpp          Renderer/Sprite.h
+        Renderer/Texture.cpp         Renderer/Texture.h
+        Renderer/FrameBuffer.cpp     Renderer/FrameBuffer.h
+
+        Game/Game.cpp                Game/Game.h
+        Game/Player.cpp              Game/Player.h
+        Game/Tile.h
 )
 
 add_executable(${EXE_FILE} ${SOURCE_FILES})
 
-# Libs
+
+# ------------------------------------------------------------------------------
+# Third-party Libs
+# ------------------------------------------------------------------------------
 include(FetchContent)
 
 # GLFW
@@ -81,14 +75,22 @@ find_package(Torch REQUIRED)
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm "${TORCH_LIBRARIES}")
 
-# define asset root
+
+# ------------------------------------------------------------------------------
+# Compile definitions for assets/data (multi-config safe)
+#   - Release: use relative "./assets/"
+#   - Others : use source-tree assets
+# ------------------------------------------------------------------------------
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(ASSET_ROOT ./assets/)
 else ()
     set(ASSET_ROOT ${CMAKE_SOURCE_DIR}/assets/)
 endif ()
 
-#define data root
+
+# ------------------------------------------------------------------------------
+# Define Data ROOT
+# ------------------------------------------------------------------------------
 set(DATA_ROOT ${CMAKE_SOURCE_DIR}/data/)
 
 target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${ASSET_ROOT}" DATA_ROOT="${DATA_ROOT}")
