@@ -33,7 +33,7 @@ Here is a quick overview of how the application works:
 ![app](files/FusionEngine.svg)
 
 The application first pools the input ([GLFW](https://github.com/glfw/glfw)) and the game reacts to it and produces an 
-ASCII-string based on the current game state. This game state then can either be fed to a traditional [OpenGL](https://learnopengl.com/) renderer or
+ASCII-string based on the current game state. This game state then can either be fed to a traditional [OpenGL](https://www.opengl.org/) renderer or
 our neural renderer.
 
 At the moment the renderer can be switched at runtime. (Next to have a real GUI to see both rendered side by side.)
