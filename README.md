@@ -9,6 +9,8 @@ What if we do not need to render the game traditionally any longer?
 
 With this project I want to explore this idea.
 
+![snakeGIF](files/Snake3.gif)
+
 ## Idea
 
 Other work in this field like [Game'n'Gen](https://arxiv.org/abs/2408.14837) and [PlayGen](https://arxiv.org/abs/2412.00887)
@@ -17,7 +19,7 @@ utilizes a stable diffusion network and feed the game state as semantic vector t
 I propose a different idea, what if the game is internally rendered in a simplified version like ASCII and works completely on their own.
 We then use the simplified visualization and feed that into a network to generate the complex visualization.
 
-![idea](img/Idea.svg)
+![idea](files/Idea.svg)
 
 Instead of abstracting the game and its logic and let the diffusion network embeed (and therefore learn) the game,
 we generate the ASCII representation of the game and feed that either into the traditional rendering pipeline (OpenGL) or
@@ -28,7 +30,7 @@ We only use it as a different visualization method and let the game engine still
 
 Here is a quick overview of how the application works:
 
-![app](img/FusionEngine.svg)
+![app](files/FusionEngine.svg)
 
 The application first pools the input ([GLFW](https://github.com/glfw/glfw)) and the game reacts to it and produces an 
 ASCII-string based on the current game state. This game state then can either be fed to a traditional [OpenGL](https://learnopengl.com/) renderer or
@@ -38,7 +40,7 @@ At the moment the renderer can be switched at runtime. (Next to have a real GUI 
 
 ## Neural Renderer
 
-![neural](img/NeuralRenderer.svg)
+![neural](files/NeuralRenderer.svg)
 
 The ASCII string is first transformed into a 2-dim tensor grid and further processed through a one hot encoding.
 Meaning every character representation (snake, wall, pellet, ground) gets its own layer.
@@ -49,7 +51,7 @@ and produces our neural buffer, containing an RGB frame.
 
 To train our neural network we have to generate some data.
 
-![data](img/DataGeneration.svg)
+![data](files/DataGeneration.svg)
 
 While playing the game I added a serializer function to save the generated ASCII-string as a .txt file and the OpenGL frame buffer as .png file.
 Files are saved with a uniform naming convention (ex. 0001.txt, 0001.png).
@@ -61,7 +63,7 @@ The train, validate and test split is 1000 : 200 : 100 data points.
 
 The network training is done completely in Python with PyTorch:
 
-![tensorboard](img/Tensorboard.png)
+![tensorboard](files/Tensorboard.png)
 
 The whole trainings process is visualized via tensorboard.
 
