@@ -16,6 +16,6 @@ libtorch/
 runs/
 
 # OpenGL context
-extern/
+glad/
 /LearnOpenGL/assets/textures
 
