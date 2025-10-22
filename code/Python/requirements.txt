@@ -1,8 +1,8 @@
-opencv==4.10.0
-torch==2.8.0+rocm6.4
-torchvision==0.23.0+rocm6.4
-matplotlib==3.10.6
-torchinfo==1.8.0
+opencv
+torch
+torchvision
+matplotlib
+torchinfo
 tqdm
-torchmetrics==1.8.2
-tensorboard==2.20.0
+torchmetrics
+tensorboard
