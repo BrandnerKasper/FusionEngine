@@ -43,7 +43,7 @@ At the moment the renderer can be switched at runtime. (Next to have a real GUI 
 ![neural](files/NeuralRenderer.svg)
 
 The ASCII string is first transformed into a 2-dim tensor grid and further processed through a one hot encoding.
-Meaning every character representation (snake, wall, pellet, ground) gets its own layer.
+Meaning every character representation (snake, wall, pellet, ground) gets its own 2D layer, increasing the tensor from 32 x 32 x 1 to 32 x 32 x 4.
 This input is then given to our very simple neural network (a simple CNN atm. since we only need to learn a simple character to color mapping) 
 and produces our neural buffer, containing an RGB frame.
 
@@ -69,3 +69,40 @@ The whole trainings process is visualized via tensorboard.
 
 Trained neural network models (.pth files) can be converted to be usable in C++ via the PyTorch C++ API (.pt files).  
 And can be utilized in our C++ application.
+
+## How to install
+
+Here's a short explanation how to get the code running on your machine.
+Of course clone the repo ```git clone https://github.com/BrandnerKasper/FusionEngine.git``` or download the .zip.
+In the following I will explain how to get the Python and C++ code running.
+
+### Python
+
+Install a modern Python version like 3.12.
+Use pip or conda to create a virtual environment.
+Install dependencies based on requirements.txt file.
+
+Via pip:
+```console
+pip install -r /path/to/requirements.txt
+```
+
+Via Conda:
+```console
+conda install --yes --file requirements.txt
+```
+
+I used generic torch and torch vision packages (as on my machine I am using the rocm version, because I have an AMD GPU).
+Feel free to use the CUDA version or the CPU version based on this [website](https://pytorch.org/get-started/locally/) and your OS.
+
+### C++
+
+Most dependencies should be solved via running the CMakeLists.txt file. (I am using CLion and the integrated CMake functionality, so no console commands here!)
+There are two exceptions to this rule:
+- [GLAD](https://glad.dav1d.de/) has to be specifially chosen based on your OS and hardware configuration. 
+A good explanation is given [here](https://learnopengl.com/Getting-started/Creating-a-window).
+Use version 4.6 and put the downloaded extraced folder into the extern folder ```FusionEngine/code/C++/extern```.
+- [Pytorch C++](https://pytorch.org/get-started/locally/) download the PyTorch library depending on your OS/hardware from the linked website and put the folder into ```FusionEngine/code/C++/extern``` again. 
+
+At this point you should be set up, all dependencies are resolved and the code should compile.
+If not feel free to write me an angry mail, I will update this section accordingly.
