@@ -72,6 +72,13 @@ FetchContent_MakeAvailable(glm)
 # TORCH CPU
 set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/extern/libtorch")
 find_package(Torch REQUIRED)
+# The libs live in extern/libtorch/lib relative to the exe
+if(UNIX AND NOT APPLE)
+    set_target_properties(${EXE_FILE} PROPERTIES
+            BUILD_RPATH "\$ORIGIN/extern/libtorch/lib"
+            INSTALL_RPATH "\$ORIGIN/extern/libtorch/lib"
+            INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
 
 target_link_libraries(${EXE_FILE} PRIVATE glfw glad glm::glm "${TORCH_LIBRARIES}")
 
